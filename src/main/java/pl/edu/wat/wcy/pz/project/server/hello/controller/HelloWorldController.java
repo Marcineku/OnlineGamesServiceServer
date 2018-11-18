@@ -16,6 +16,6 @@ public class HelloWorldController {
         int port = httpServletRequest.getRemotePort();
         System.out.println("-->" + requestURI + ", port" + port);
 
-        return new HelloWorldBean("Hello World");
+        return new HelloWorldBean("Welcome!");
     }
 }
