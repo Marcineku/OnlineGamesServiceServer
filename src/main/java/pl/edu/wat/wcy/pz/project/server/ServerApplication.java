@@ -25,14 +25,14 @@ public class ServerApplication {
     @Autowired
     public void authenticationManager(AuthenticationManagerBuilder builder, UserRepository repository) throws Exception {
 
-//        if (repository.count() == 0)
-//            repository.save(new User(0L, "user2", "user2", "examplemail", new Date(), new Date(), "T",
-//                    Arrays.asList(new Role(0L, "USER"), new Role(1L, "ACTUATOR"))));
-//
-//        List<User> list = repository.findAll();
-//        for (User user : list) {
-//            System.out.println(user.getUserName());
-//        }
+        if (repository.count() == 0)
+            repository.save(new User(0L, "user2", "user2", "examplemail", new Date(), new Date(), "T",
+                    Arrays.asList(new Role(0L, "USER"), new Role(1L, "ACTUATOR"))));
+
+        List<User> list = repository.findAll();
+        for (User user : list) {
+            System.out.println(user.getUserName());
+        }
 
         builder.userDetailsService(s -> new CustomUserDetails(repository.findByUserName(s)));
     }
