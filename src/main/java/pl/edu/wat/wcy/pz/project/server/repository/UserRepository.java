@@ -6,4 +6,6 @@ import pl.edu.wat.wcy.pz.project.server.entity.User;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+
+    User findByUserName(String userName);
 }

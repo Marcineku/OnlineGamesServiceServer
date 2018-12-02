@@ -10,12 +10,17 @@ import javax.servlet.http.HttpServletRequest;
 @CrossOrigin
 public class HelloWorldController {
 
-    @GetMapping("hello")
+    @GetMapping("/hello")
     public HelloWorldBean getHelloWorld(HttpServletRequest httpServletRequest) {
         String requestURI = httpServletRequest.getRemoteAddr();
         int port = httpServletRequest.getRemotePort();
         System.out.println("-->" + requestURI + ", port" + port);
 
         return new HelloWorldBean("Welcome!");
+    }
+
+    @GetMapping("/private")
+    public String privateArea() {
+        return "private";
     }
 }
