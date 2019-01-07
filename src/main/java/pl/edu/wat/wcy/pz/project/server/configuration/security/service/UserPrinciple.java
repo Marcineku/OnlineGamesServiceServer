@@ -1,5 +1,6 @@
 package pl.edu.wat.wcy.pz.project.server.configuration.security.service;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
@@ -15,11 +16,12 @@ import java.util.stream.Collectors;
 @AllArgsConstructor
 @Getter
 public class UserPrinciple implements UserDetails {
+    private static final long serialVersionUID = 1L;
 
     private Long id;
     private String username;
     private String email;
-    //todo = @JsonIgnore
+    @JsonIgnore
     private String password;
     private Collection<? extends GrantedAuthority> authorities;
 

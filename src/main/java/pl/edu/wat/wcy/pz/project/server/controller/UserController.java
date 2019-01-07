@@ -2,6 +2,7 @@ package pl.edu.wat.wcy.pz.project.server.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
@@ -14,6 +15,7 @@ import java.util.Optional;
 @AllArgsConstructor
 @RestController
 @CrossOrigin
+@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     private UserService userService;

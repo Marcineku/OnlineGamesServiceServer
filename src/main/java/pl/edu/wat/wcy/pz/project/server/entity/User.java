@@ -31,7 +31,7 @@ public class User {
     @Column(name = "IS_EMAIL_VERIFIED")
     private String isEmailVerified;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "USER_ROLES",
             joinColumns = @JoinColumn(name = "USER_ID"),
             inverseJoinColumns = @JoinColumn(name = "ROLE_ID"))

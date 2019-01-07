@@ -1,5 +1,6 @@
 package pl.edu.wat.wcy.pz.project.server;
 
+import org.omg.PortableInterceptor.USER_EXCEPTION;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -30,6 +31,33 @@ public class ServerApplication {
             Role role2 = new Role(2L, RoleName.ROLE_USER);
             roleRepository.save(role);
             roleRepository.save(role2);
+
+            Set<Role> roles = new HashSet<>();
+            roles.add(roleRepository.findByRoleName(RoleName.ROLE_ADMIN).get());
+            roles.add(roleRepository.findByRoleName(RoleName.ROLE_USER).get());
+
+            User user = User.builder()
+                    .username("Mateusz")
+                    .email("mateusz@mateusz.pl")
+                    .password(encoder.encode("Mateusz"))
+                    .registrationDate(new Date())
+                    .isEmailVerified("T")
+                    .lastLogonDate(new Date())
+                    .roles(roles).build();
+
+            userRepository.save(user);
+
+            roles.removeIf(role1 -> role1.getRoleName().equals(RoleName.ROLE_ADMIN));
+
+            user = User.builder()
+                    .username("Marcin")
+                    .email("Marcin@Marcin.pl")
+                    .password(encoder.encode("Marcin"))
+                    .registrationDate(new Date())
+                    .isEmailVerified("T")
+                    .lastLogonDate(new Date())
+                    .roles(roles).build();
+            userRepository.save(user);
         };
     }
 }
