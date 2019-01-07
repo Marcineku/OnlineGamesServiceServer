@@ -17,8 +17,8 @@ public class UserService {
     public User createUser(User user) {
         List<User> userList = userRepository.findAll();
 
-        if (userList.stream().map(User::getName).anyMatch(user.getName()::equals))
-            throw new RuntimeException("A user with this name already exist");
+        if (userList.stream().map(User::getUsername).anyMatch(user.getUsername()::equals))
+            throw new RuntimeException("A user with this username already exist");
 
         return userRepository.save(user);
     }
