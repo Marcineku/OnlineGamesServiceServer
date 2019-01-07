@@ -17,7 +17,7 @@ public class UserService {
     public User createUser(User user) {
         List<User> userList = userRepository.findAll();
 
-        if (userList.stream().map(User::getUserName).anyMatch(user.getUserName()::equals))
+        if (userList.stream().map(User::getName).anyMatch(user.getName()::equals))
             throw new RuntimeException("A user with this name already exist");
 
         return userRepository.save(user);
@@ -32,10 +32,11 @@ public class UserService {
     }
 
     public User updateUser(Long id, User user) {
+
         Optional<User> oldUser = userRepository.findById(id);
         if(!oldUser.isPresent())
             throw new RuntimeException("User with id " + id + "not exist");
-        //todo
+
 
 
         return null;

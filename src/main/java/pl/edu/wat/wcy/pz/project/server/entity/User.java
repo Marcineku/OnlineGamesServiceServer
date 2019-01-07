@@ -5,9 +5,11 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
 import java.util.Date;
-import java.util.List;
 
 @Getter
 @Setter
@@ -19,8 +21,8 @@ public class User {
     @GeneratedValue
     @Column(name = "USER_ID")
     private Long userId;
-    @Column(name = "USER_NAME")
-    private String userName;
+    @Column(name = "NAME")
+    private String name;
     @Column(name = "PASSWORD")
     private String password;
     @Column(name = "EMAIL")
@@ -31,7 +33,4 @@ public class User {
     private Date lastLogonDate;
     @Column(name = "IS_EMAIL_VERIFIED")
     private String isEmailVerified;
-
-    @OneToMany(fetch = FetchType.EAGER, cascade = CascadeType.ALL)
-    private List<Role> roles;
 }
