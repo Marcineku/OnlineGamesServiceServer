@@ -1,7 +1,6 @@
 package pl.edu.wat.wcy.pz.project.server.controller;
 
 import lombok.AllArgsConstructor;
-import lombok.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -49,6 +48,11 @@ public class AuthController {
 
         String jwt = jwtProvider.generateJwtToken(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+
+        //todo Test
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println("tutaj --->>> " + principal.getUsername() + " | " + principal.getPassword() + " | " + principal.getAuthorities().toString());
+        //todo
 
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities()));
     }

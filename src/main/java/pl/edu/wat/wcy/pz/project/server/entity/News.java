@@ -2,10 +2,7 @@ package pl.edu.wat.wcy.pz.project.server.entity;
 
 import lombok.*;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.util.Date;
 
 @Getter
@@ -16,7 +13,7 @@ import java.util.Date;
 public class News {
 
     @Id
-    @GeneratedValue()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "NEWS_ID")
     private Long newsId;
     @Column(name = "TYPE")
