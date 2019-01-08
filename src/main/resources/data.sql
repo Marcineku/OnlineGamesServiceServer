@@ -32,3 +32,6 @@ INSERT INTO NEWS (NEWS_ID, TYPE, TITLE, TEXT, PUBLICATION_DATE, LANGUAGE)
   VALUES (hibernate_sequence.nextval,'Type4','Title4','Text4', sysdate(), 'PL');
 INSERT INTO NEWS (NEWS_ID, TYPE, TITLE, TEXT, PUBLICATION_DATE, LANGUAGE)
   VALUES (hibernate_sequence.nextval,'Type4','Title4','Text4', sysdate(), 'PL');
+
+-- INSERT INTO USER (USER_ID, USERNAME, EMAIL, IS_EMAIL_VERIFIED, LAST_LOGON_DATE, PASSWORD, REGISTRATION_DATE)
+-- VALUES (1, 'Mateusz', 'mateusz@mateusz.pl', 'T', sysdate())
