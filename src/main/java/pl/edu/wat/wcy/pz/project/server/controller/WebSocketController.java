@@ -21,9 +21,9 @@ public class WebSocketController {
         Thread.sleep(1000);
         //this.template.convertAndSend("/chat",
         //        new SimpleDateFormat("HH:mm:ss").format(new Date()) + "- " + message);
-        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        //UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         this.template.convertAndSend("/chat",
-                new SimpleDateFormat("HH:mm:ss").format(new Date()) + "- " + principal.getUsername());
+                new SimpleDateFormat("HH:mm:ss").format(new Date()) + "- " + message);
     }
 
 }
