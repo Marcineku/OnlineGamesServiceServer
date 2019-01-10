@@ -26,4 +26,5 @@ public class News {
     private Date publicationDate;
     @Column(name = "LANGUAGE")
     private String language;
+
 }

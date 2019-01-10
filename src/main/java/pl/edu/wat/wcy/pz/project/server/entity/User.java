@@ -1,6 +1,7 @@
 package pl.edu.wat.wcy.pz.project.server.entity;
 
 import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -18,6 +19,7 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
     private Long userId;
+    @NaturalId
     @Column(name = "USERNAME")
     private String username;
     @Column(name = "PASSWORD")

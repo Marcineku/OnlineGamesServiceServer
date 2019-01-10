@@ -8,9 +8,12 @@ import org.springframework.web.bind.annotation.*;
 import pl.edu.wat.wcy.pz.project.server.entity.game.GameType;
 import pl.edu.wat.wcy.pz.project.server.entity.game.PieceCode;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
+import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeMove;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
 import pl.edu.wat.wcy.pz.project.server.form.response.Message;
 import pl.edu.wat.wcy.pz.project.server.service.TicTacToeService;
+
+import java.util.List;
 
 @AllArgsConstructor
 @CrossOrigin
@@ -30,11 +33,26 @@ public class TicTacToeController {
         return ResponseEntity.ok(new Message("Game created"));
     }
 
-    @GetMapping("/tictactoe")
-    public TicTacToeDTO get() {
-        TicTacToeDTO dto = new TicTacToeDTO();
-        dto.setGameType(GameType.SINGLEPLAYER);
-        dto.setPieceCode(PieceCode.X);
-        return dto;
+    @GetMapping("/tictactoe/toJoin")
+    public List<TicTacToeGame> getAvailableGames() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ticTacToeService.getAvailableGames(principal.getUsername());
+    }
+
+    @GetMapping("/tictactoe/myGames")
+    public List<TicTacToeGame> getUserGames() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ticTacToeService.getUserGames(principal.getUsername());
+    }
+
+    @GetMapping("/tictactoe/gamesHistory/{gameType}")
+    public List<TicTacToeGame> getGamesHistory(@PathVariable GameType gameType) {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        return ticTacToeService.getUserGamesHistory(principal.getUsername(), gameType);
+    }
+
+    @GetMapping("/moves/{id}")
+    public List<TicTacToeMove> getGameMoves(@PathVariable Long gameId) {
+        return ticTacToeService.getGameMoves(gameId);
     }
 }

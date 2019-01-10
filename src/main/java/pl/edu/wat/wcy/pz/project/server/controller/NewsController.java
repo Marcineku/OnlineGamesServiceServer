@@ -5,6 +5,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.edu.wat.wcy.pz.project.server.entity.News;
+import pl.edu.wat.wcy.pz.project.server.form.NewsDTO;
+import pl.edu.wat.wcy.pz.project.server.mapper.NewsMapper;
 import pl.edu.wat.wcy.pz.project.server.service.NewsService;
 
 import java.net.URI;
@@ -28,8 +30,9 @@ public class NewsController {
     }
 
     @PostMapping("/news")
-    public ResponseEntity<Object> createNews(@RequestBody News news) {
-        News createdNews = newsService.createNews(news);
+    public ResponseEntity<Object> createNews(@RequestBody NewsDTO newsDTO) {
+
+        News createdNews = newsService.createNews(newsDTO);
 
         URI location = ServletUriComponentsBuilder
                 .fromCurrentRequest()
