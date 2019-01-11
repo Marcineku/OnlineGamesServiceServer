@@ -3,10 +3,9 @@ package pl.edu.wat.wcy.pz.project.server.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 
+import java.security.Principal;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
@@ -17,11 +16,9 @@ public class WebSocketController {
     private final SimpMessagingTemplate template;
 
     @MessageMapping("/send/message")
-    public void send(String  message) throws InterruptedException {
+    public void send(String  message, Principal principal) throws InterruptedException {
         Thread.sleep(1000);
-        //this.template.convertAndSend("/chat",
-        //        new SimpleDateFormat("HH:mm:ss").format(new Date()) + "- " + message);
-        //UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        System.out.println(principal.getName() + "<----");
         this.template.convertAndSend("/chat",
                 new SimpleDateFormat("HH:mm:ss").format(new Date()) + "- " + message);
     }
