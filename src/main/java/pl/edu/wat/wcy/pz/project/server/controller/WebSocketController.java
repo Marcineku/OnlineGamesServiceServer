@@ -28,7 +28,7 @@ public class WebSocketController {
     public void sendMove(@DestinationVariable Integer gameId, String  message, Principal principal) throws InterruptedException {
         Thread.sleep(1000);  //todo
         System.out.println(principal.getName() + "<----");
-        this.template.convertAndSend("/chat/" + gameId,
+        this.template.convertAndSend("/move/" + gameId,
                 new SimpleDateFormat("HH:mm:ss").format(new Date()) + "- " + message);
     }
 }
