@@ -38,7 +38,7 @@ public class TicTacToeController {
         return ticTacToeService.getAvailableGames(principal.getUsername());
     }
 
-    @PutMapping("/tictactoe/join/{gameId}")
+    @GetMapping("/tictactoe/join/{gameId}")
     public ResponseEntity<?> joinToGame(@PathVariable Long gameId) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = principal.getUsername();
@@ -46,6 +46,9 @@ public class TicTacToeController {
         TicTacToeGameDTO gameDto = ticTacToeService.addSecondPlayerToGame(gameId, username);
         return new ResponseEntity<>(gameDto, HttpStatus.OK);
     }
+
+    //@GetMapping("/tictactoe/start/{gameId}")
+    //public ResponseEntity<?> startGame()
 
     /**
      * //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

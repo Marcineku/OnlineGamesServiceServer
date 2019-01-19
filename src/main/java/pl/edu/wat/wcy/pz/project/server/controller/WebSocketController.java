@@ -5,15 +5,12 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Controller;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
+import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
 import pl.edu.wat.wcy.pz.project.server.form.response.Message;
 import pl.edu.wat.wcy.pz.project.server.service.logic.TicTacToeLogic;
 
 import java.security.Principal;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
 
 @Controller
 @AllArgsConstructor
@@ -33,11 +30,11 @@ public class WebSocketController {
     @MessageMapping("/send/move/{gameId}")
     public void sendMove(@DestinationVariable Integer gameId, String message, Principal principal) throws InterruptedException {
         Integer fieldNumber = Integer.parseInt(message);
-        ticTacToeLogic.updateGame(gameId, principal.getName(), fieldNumber);
+        TicTacToeGameStateDTO updatedGameState = ticTacToeLogic.updateGame(gameId, principal.getName(), fieldNumber);
 
         System.out.println(principal.getName() + "<----");
         this.template.convertAndSend("/move/" + gameId,
-                new SimpleDateFormat("HH:mm:ss").format(new Date()) + "- " + message);
+                updatedGameState);
     }
 
 //    @MessageMapping("")
