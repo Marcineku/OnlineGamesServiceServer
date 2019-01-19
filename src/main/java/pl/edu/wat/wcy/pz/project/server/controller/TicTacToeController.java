@@ -1,6 +1,5 @@
 package pl.edu.wat.wcy.pz.project.server.controller;
 
-import jdk.nashorn.internal.objects.annotations.Getter;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,7 +13,6 @@ import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
 import pl.edu.wat.wcy.pz.project.server.service.TicTacToeService;
 
-import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @AllArgsConstructor
@@ -35,7 +33,7 @@ public class TicTacToeController {
     }
 
     @GetMapping("/tictactoe/list")
-    public List<TicTacToeGame> getAvailableGames() {
+    public List<TicTacToeGameDTO> getAvailableGames() {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         return ticTacToeService.getAvailableGames(principal.getUsername());
     }
