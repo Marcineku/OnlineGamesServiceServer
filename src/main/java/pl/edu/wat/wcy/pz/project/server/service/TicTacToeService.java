@@ -58,7 +58,7 @@ public class TicTacToeService {
         return ticTacToeGameMapper.toDto(savedGame);
     }
 
-    public List<TicTacToeGame> getAvailableGames(String username) {
+    public List<TicTacToeGameDTO> getAvailableGames(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
         List<TicTacToeGame> games = ticTacToeGameRepository.findAllByGameTypeAndFirstPlayerNot(GameType.MULTIPLAYER, user);
         List<GameStatus> statusList = new ArrayList<>();
@@ -67,7 +67,7 @@ public class TicTacToeService {
         statusList.add(GameStatus.IN_PROGERSS);
 
         games = games.stream().filter(ticTacToeGame -> statusList.contains(ticTacToeGame.getGameStatus())).collect(Collectors.toList());
-        return games;
+        return games.stream().map(ticTacToeGameMapper::toDto).collect(Collectors.toList());
     }
 
     public List<TicTacToeGame> getUserGames(String username) {

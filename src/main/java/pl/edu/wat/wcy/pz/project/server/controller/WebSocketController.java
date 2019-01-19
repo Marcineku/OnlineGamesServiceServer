@@ -32,13 +32,16 @@ public class WebSocketController {
 
     @MessageMapping("/send/move/{gameId}")
     public void sendMove(@DestinationVariable Integer gameId, String message, Principal principal) throws InterruptedException {
-
-        int fieldNumber = Integer.parseInt(message);
-
-        ticTacToeLogic.updateGame();
+        Integer fieldNumber = Integer.parseInt(message);
+        ticTacToeLogic.updateGame(gameId, principal.getName(), fieldNumber);
 
         System.out.println(principal.getName() + "<----");
         this.template.convertAndSend("/move/" + gameId,
                 new SimpleDateFormat("HH:mm:ss").format(new Date()) + "- " + message);
     }
+
+//    @MessageMapping("")
+//    public void sendTicTacToeList() {
+//        this.template.convertAndSend("/tictactoe");
+//    }
 }

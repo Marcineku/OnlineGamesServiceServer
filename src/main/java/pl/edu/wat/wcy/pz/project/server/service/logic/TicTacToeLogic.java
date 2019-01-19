@@ -18,7 +18,9 @@ public class TicTacToeLogic {
 
     private List<TicTacToeGameDTO> gameDTOList = new ArrayList<>();
 
-    public TicTacToeGameDTO updateGame() {
+    public TicTacToeGameDTO updateGame(Integer gameId, String username, Integer fieldNumber) {
 
+
+        return null;
     }
 }
