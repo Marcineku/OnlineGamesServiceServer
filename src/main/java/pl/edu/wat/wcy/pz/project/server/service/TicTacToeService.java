@@ -44,6 +44,20 @@ public class TicTacToeService {
         return ticTacToeGameMapper.toDto(newGame);
     }
 
+    public TicTacToeGameDTO addSecondPlayerToGame(Long gameId, String username) {
+        User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        TicTacToeGame game = ticTacToeGameRepository.findById(gameId).orElseThrow(() -> new RuntimeException("Game not found"));
+        if (game.getSecondPlayer() != null)
+            throw new RuntimeException("Somebody has already joined this game!");
+        if (game.getFirstPlayer().getUsername().equals(user.getUsername()))
+            throw new RuntimeException("This user is a first player");
+
+        game.setSecondPlayer(user);
+        TicTacToeGame savedGame = ticTacToeGameRepository.save(game);
+        return ticTacToeGameMapper.toDto(savedGame);
+    }
+
     public List<TicTacToeGame> getAvailableGames(String username) {
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
         List<TicTacToeGame> games = ticTacToeGameRepository.findAllByGameTypeAndFirstPlayerNot(GameType.MULTIPLAYER, user);

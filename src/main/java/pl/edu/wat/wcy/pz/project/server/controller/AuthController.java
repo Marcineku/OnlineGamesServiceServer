@@ -14,9 +14,11 @@ import pl.edu.wat.wcy.pz.project.server.configuration.security.jwt.JwtProvider;
 import pl.edu.wat.wcy.pz.project.server.entity.Role;
 import pl.edu.wat.wcy.pz.project.server.entity.RoleName;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
+import pl.edu.wat.wcy.pz.project.server.form.EmailDTO;
 import pl.edu.wat.wcy.pz.project.server.form.LoginForm;
 import pl.edu.wat.wcy.pz.project.server.form.SignUpForm;
 import pl.edu.wat.wcy.pz.project.server.form.response.JwtResponse;
+import pl.edu.wat.wcy.pz.project.server.rabbit.RabbitProducer;
 import pl.edu.wat.wcy.pz.project.server.repository.RoleRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
 
@@ -38,6 +40,8 @@ public class AuthController {
 
     private PasswordEncoder encoder;
     private JwtProvider jwtProvider;
+
+    private RabbitProducer rabbitProducer;
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginForm) {
@@ -63,7 +67,7 @@ public class AuthController {
             return new ResponseEntity<>("User with this name already exist", HttpStatus.BAD_REQUEST);
         }
         if (userRepository.existsByEmail(signUpForm.getEmail())) {
-            return new ResponseEntity<>("User with this email already exist", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("User with this service already exist", HttpStatus.BAD_REQUEST);
         }
 
         Set<Role> roles = new HashSet<>();
@@ -81,12 +85,15 @@ public class AuthController {
         User user = User.builder()
                 .username(signUpForm.getUsername())
                 .email(signUpForm.getEmail())
-                .password(encoder.encode(signUpForm.getPassword())) //todo
+                .password(encoder.encode(signUpForm.getPassword()))
                 .roles(roles)
                 .registrationDate(Calendar.getInstance().getTime())
                 .build();
 
         userRepository.save(user);
+
+        EmailDTO emailDTO = new EmailDTO(signUpForm.getEmail(), null, null, EmailDTO.EmailType.VERIFICATION_EMAIL);
+        rabbitProducer.sendToQueue(emailDTO);
 
         return new ResponseEntity<>("User created!", HttpStatus.CREATED);
     }

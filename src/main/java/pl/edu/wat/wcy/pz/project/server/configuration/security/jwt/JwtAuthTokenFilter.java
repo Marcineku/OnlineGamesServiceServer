@@ -1,6 +1,5 @@
 package pl.edu.wat.wcy.pz.project.server.configuration.security.jwt;
 
-import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +26,7 @@ public class JwtAuthTokenFilter extends OncePerRequestFilter {
     @Autowired
     private UserDetailsServiceImpl userDetailsService;
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthTokenFilter.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(JwtAuthTokenFilter.class);
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
