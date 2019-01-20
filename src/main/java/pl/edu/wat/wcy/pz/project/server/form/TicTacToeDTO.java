@@ -8,6 +8,6 @@ import pl.edu.wat.wcy.pz.project.server.entity.game.PieceCode;
 @Getter
 @Setter
 public class TicTacToeDTO {
-    private GameType gameType;
+    private String gameType;
     private PieceCode pieceCode;
 }

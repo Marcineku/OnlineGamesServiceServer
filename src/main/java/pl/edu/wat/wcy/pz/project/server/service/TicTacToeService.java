@@ -35,8 +35,8 @@ public class TicTacToeService {
                 .firstPlayer(user)
                 .created(Calendar.getInstance().getTime())
                 .firstPlayerPieceCode(ticTacToeDTO.getPieceCode())
-                .gameType(ticTacToeDTO.getGameType())
-                .gameStatus(ticTacToeDTO.getGameType() == GameType.SINGLEPLAYER ? GameStatus.IN_PROGERSS : GameStatus.WATINIG_FOR_PLAYER)
+                .gameType("singleplayer".equalsIgnoreCase(ticTacToeDTO.getGameType())? GameType.SINGLEPLAYER : GameType.MULTIPLAYER)
+                .gameStatus(GameStatus.WATINIG_FOR_PLAYER)
                 .build();
 
         ticTacToeGameRepository.save(newGame);

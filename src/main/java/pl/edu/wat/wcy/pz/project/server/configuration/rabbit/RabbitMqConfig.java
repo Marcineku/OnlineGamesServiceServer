@@ -22,7 +22,7 @@ public class RabbitMqConfig {
 
     @Bean
     Queue queue() {
-        return new Queue(queueName, false);
+        return new Queue(queueName, true, false, false);
     }
 
     @Bean
@@ -43,6 +43,7 @@ public class RabbitMqConfig {
     public AmqpTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(jsonMessageConverter());
+        rabbitTemplate.setMessageConverter(null);
         return rabbitTemplate;
     }
 }
