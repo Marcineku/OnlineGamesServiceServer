@@ -2,6 +2,7 @@ package pl.edu.wat.wcy.pz.project.server.controller;
 
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 import pl.edu.wat.wcy.pz.project.server.entity.News;
@@ -30,6 +31,7 @@ public class NewsController {
     }
 
     @PostMapping("/news")
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Object> createNews(@RequestBody NewsDTO newsDTO) {
 
         News createdNews = newsService.createNews(newsDTO);
