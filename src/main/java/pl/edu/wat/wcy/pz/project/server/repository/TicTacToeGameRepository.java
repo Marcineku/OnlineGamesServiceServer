@@ -16,4 +16,8 @@ public interface TicTacToeGameRepository extends JpaRepository<TicTacToeGame, Lo
     List<TicTacToeGame> findAllByFirstPlayer_Username(String firstPlayer_username);
     List<TicTacToeGame> findAllByFirstPlayer_UsernameAndGameTypeAndGameStatusIn(String firstPlayer_username, GameType gameType, Collection<GameStatus> gameStatus);
     List<TicTacToeGame> findAllBySecondPlayer_Username(String secondPlayer_username);
+
+    List<TicTacToeGame> findAllByFirstPlayer_UsernameAndGameStatusIn(String firstPlayer_username, Collection<GameStatus> gameStatus);
+
+    boolean existsByFirstPlayer_UsernameAndGameStatusIn(String firstPlayer_username, Collection<GameStatus> gameStatus);
 }

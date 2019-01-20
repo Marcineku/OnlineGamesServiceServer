@@ -14,7 +14,10 @@ import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeMoveRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -31,11 +34,15 @@ public class TicTacToeService {
     public TicTacToeGameDTO createGame(TicTacToeDTO ticTacToeDTO, String username) {
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (ticTacToeGameRepository.existsByFirstPlayer_UsernameAndGameStatusIn(username, Arrays.asList(GameStatus.IN_PROGERSS, GameStatus.WATINIG_FOR_PLAYER)))
+            throw new RuntimeException("This player has already created a game.");
+
         TicTacToeGame newGame = TicTacToeGame.builder()
                 .firstPlayer(user)
                 .created(Calendar.getInstance().getTime())
                 .firstPlayerPieceCode(ticTacToeDTO.getPieceCode())
-                .gameType("singleplayer".equalsIgnoreCase(ticTacToeDTO.getGameType())? GameType.SINGLEPLAYER : GameType.MULTIPLAYER)
+                .gameType("singleplayer".equalsIgnoreCase(ticTacToeDTO.getGameType()) ? GameType.SINGLEPLAYER : GameType.MULTIPLAYER)
                 .gameStatus(GameStatus.WATINIG_FOR_PLAYER)
                 .build();
 
@@ -93,5 +100,9 @@ public class TicTacToeService {
 
     public List<TicTacToeMove> getGameMoves(Long gameId) {
         return ticTacToeMoveRepository.findAllByGame_GameId(gameId);
+    }
+
+    public List<TicTacToeGame> getActiveGames(String username) {
+        return ticTacToeGameRepository.findAllByFirstPlayer_UsernameAndGameStatusIn(username, Arrays.asList(GameStatus.WATINIG_FOR_PLAYER, GameStatus.IN_PROGERSS));
     }
 }

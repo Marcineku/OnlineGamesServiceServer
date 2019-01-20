@@ -27,9 +27,21 @@ public class TicTacToeController {
     public ResponseEntity<?> createGame(@RequestBody TicTacToeDTO ticTacToeDTO) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = principal.getUsername();
-        TicTacToeGameDTO createdGameDto = ticTacToeService.createGame(ticTacToeDTO, username);
 
+        TicTacToeGameDTO createdGameDto;
+        try {
+            createdGameDto = ticTacToeService.createGame(ticTacToeDTO, username);
+        } catch (RuntimeException e) {
+            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+        }
         return new ResponseEntity<>(createdGameDto, HttpStatus.OK);
+    }
+
+    @GetMapping("/tictactoe/games/active")
+    public List<TicTacToeGame> getActiveGame() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = principal.getUsername();
+        return ticTacToeService.getActiveGames(username);
     }
 
     @GetMapping("/tictactoe/list")
