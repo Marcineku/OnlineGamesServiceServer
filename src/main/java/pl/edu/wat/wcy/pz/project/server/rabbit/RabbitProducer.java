@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.amqp.AmqpException;
 import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -27,8 +28,12 @@ public class RabbitProducer {
     private AmqpTemplate amqpTemplate;
 
     public void sendToQueue(EmailDTO dto) {
-        amqpTemplate.convertAndSend(exchange, routingKey, dto);
-        LOGGER.info("Message sent to queue");
+        try {
+            amqpTemplate.convertAndSend(exchange, routingKey, dto);
+            LOGGER.info("Message sent to queue");
+        } catch (AmqpException e) {
+            LOGGER.error("Exception in RabbitProducer" + e.getMessage());
+        }
     }
 
 }

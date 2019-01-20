@@ -93,6 +93,7 @@ public class AuthController {
         userRepository.save(user);
 
         EmailDTO emailDTO = new EmailDTO(signUpForm.getEmail(), null, null, EmailDTO.EmailType.VERIFICATION_EMAIL);
+
         rabbitProducer.sendToQueue(emailDTO);
 
         return new ResponseEntity<>("User created!", HttpStatus.CREATED);
