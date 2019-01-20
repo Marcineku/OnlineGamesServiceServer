@@ -1,8 +1,11 @@
 package pl.edu.wat.wcy.pz.project.server.controller;
 
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -33,6 +36,8 @@ import java.util.Set;
 @RequestMapping("/auth")
 public class AuthController {
 
+    public static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
+
     private AuthenticationManager authenticationManager;
 
     private UserRepository userRepository;
@@ -43,10 +48,17 @@ public class AuthController {
 
     private RabbitProducer rabbitProducer;
 
+    private SimpUserRegistry userRegistry;
+
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginForm) {
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword()));
+
+        if (userRegistry.getUser(loginForm.getUsername()) != null) {
+            LOGGER.warn("Logged user " + loginForm.getUsername() + " was trying to log in second time");
+            throw new RuntimeException("User is already logged!");
+        }
 
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
