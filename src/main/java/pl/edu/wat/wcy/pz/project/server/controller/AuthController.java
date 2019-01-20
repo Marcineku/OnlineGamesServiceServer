@@ -67,7 +67,7 @@ public class AuthController {
             return new ResponseEntity<>("User with this name already exist", HttpStatus.BAD_REQUEST);
         }
         if (userRepository.existsByEmail(signUpForm.getEmail())) {
-            return new ResponseEntity<>("User with this service already exist", HttpStatus.BAD_REQUEST);
+            return new ResponseEntity<>("User with this e-mail already exist", HttpStatus.BAD_REQUEST);
         }
 
         Set<Role> roles = new HashSet<>();
