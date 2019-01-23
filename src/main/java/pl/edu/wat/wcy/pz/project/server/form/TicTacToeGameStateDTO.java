@@ -10,15 +10,15 @@ import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
 @Setter
 @AllArgsConstructor
 public class TicTacToeGameStateDTO {
-    private Integer gameId;
+    private Long gameId;
     private GameStatus gameStatus;
     private Integer[] gameFields;
     private String userTurn;
 
-    public TicTacToeGameStateDTO(Integer gameId, String userTurn) {
+    public TicTacToeGameStateDTO(Long gameId, String userTurn) {
         this.gameId = gameId;
         this.userTurn = userTurn;
         this.gameFields = new Integer[9];
-        this.gameStatus = GameStatus.IN_PROGERSS;
+        this.gameStatus = GameStatus.IN_PROGRESS;
     }
 }

@@ -61,12 +61,25 @@ public class TicTacToeController {
 
         TicTacToeGameDTO gameDto = ticTacToeService.addSecondPlayerToGame(gameId, username);
 
-        template.convertAndSend("/tictactoe/add", gameDto);
+        template.convertAndSend("/tictactoe/update", gameDto);
         return new ResponseEntity<>(gameDto, HttpStatus.OK);
     }
 
-    //@GetMapping("/tictactoe/start/{gameId}")
-    //public ResponseEntity<?> startGame()
+    @GetMapping("/tictactoe/start/{gameId}")
+    public ResponseEntity<?> startGame(@PathVariable Long gameId) {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = principal.getUsername();
+
+        TicTacToeGameDTO gameDTO = ticTacToeService.startGame(gameId, username);
+
+        template.convertAndSend("/tictactoe/update", gameDTO);
+        return new ResponseEntity<>(gameDTO, HttpStatus.OK);
+    }
+
+    @DeleteMapping("/tictattoe/kick/{gameId}")
+    public ResponseEntity<?> kickPlayer(@PathVariable Long gameId, @RequestBody String playerName) {
+        return null;
+    }
 
     /**
      * //////////////////////////////////////////////////////////////////////////////////////////////////////////////////

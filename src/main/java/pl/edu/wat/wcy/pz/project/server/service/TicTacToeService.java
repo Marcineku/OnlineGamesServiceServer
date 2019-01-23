@@ -13,11 +13,9 @@ import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeGameMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeMoveRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
+import pl.edu.wat.wcy.pz.project.server.service.logic.TicTacToeLogic;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @AllArgsConstructor
@@ -25,6 +23,8 @@ import java.util.stream.Collectors;
 public class TicTacToeService {
 
     private TicTacToeGameMapper ticTacToeGameMapper;
+
+    private TicTacToeLogic ticTacToeLogic;
 
     private TicTacToeGameRepository ticTacToeGameRepository;
     private TicTacToeMoveRepository ticTacToeMoveRepository;
@@ -35,7 +35,7 @@ public class TicTacToeService {
 
         User user = userRepository.findByUsername(username).orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (ticTacToeGameRepository.existsByFirstPlayer_UsernameAndGameStatusIn(username, Arrays.asList(GameStatus.IN_PROGERSS, GameStatus.WATINIG_FOR_PLAYER)))
+        if (ticTacToeGameRepository.existsByFirstPlayer_UsernameAndGameStatusIn(username, Arrays.asList(GameStatus.IN_PROGRESS, GameStatus.WAITING_FOR_PLAYER)))
             throw new RuntimeException("This player has already created a game.");
 
         TicTacToeGame newGame = TicTacToeGame.builder()
@@ -43,7 +43,7 @@ public class TicTacToeService {
                 .created(Calendar.getInstance().getTime())
                 .firstPlayerPieceCode(ticTacToeDTO.getPieceCode())
                 .gameType("singleplayer".equalsIgnoreCase(ticTacToeDTO.getGameType()) ? GameType.SINGLEPLAYER : GameType.MULTIPLAYER)
-                .gameStatus(GameStatus.WATINIG_FOR_PLAYER)
+                .gameStatus(GameStatus.WAITING_FOR_PLAYER)
                 .build();
 
         ticTacToeGameRepository.save(newGame);
@@ -70,8 +70,8 @@ public class TicTacToeService {
         List<TicTacToeGame> games = ticTacToeGameRepository.findAllByGameTypeAndFirstPlayerNot(GameType.MULTIPLAYER, user);
         List<GameStatus> statusList = new ArrayList<>();
 
-        statusList.add(GameStatus.WATINIG_FOR_PLAYER);
-        statusList.add(GameStatus.IN_PROGERSS);
+        statusList.add(GameStatus.WAITING_FOR_PLAYER);
+        statusList.add(GameStatus.IN_PROGRESS);
 
         games = games.stream().filter(ticTacToeGame -> statusList.contains(ticTacToeGame.getGameStatus())).collect(Collectors.toList());
         return games.stream().map(ticTacToeGameMapper::toDto).collect(Collectors.toList());
@@ -103,6 +103,29 @@ public class TicTacToeService {
     }
 
     public List<TicTacToeGame> getActiveGames(String username) {
-        return ticTacToeGameRepository.findAllByFirstPlayer_UsernameAndGameStatusIn(username, Arrays.asList(GameStatus.WATINIG_FOR_PLAYER, GameStatus.IN_PROGERSS));
+        return ticTacToeGameRepository.findAllByFirstPlayer_UsernameAndGameStatusIn(username, Arrays.asList(GameStatus.WAITING_FOR_PLAYER, GameStatus.IN_PROGRESS));
+    }
+
+    public TicTacToeGameDTO startGame(Long gameId, String username) {
+        Optional<TicTacToeGame> gameOptional = ticTacToeGameRepository.findById(gameId);
+        if (!gameOptional.isPresent()) {
+            throw new RuntimeException("Game with id " + gameId + "not exist");
+        }
+        TicTacToeGame game = gameOptional.get();
+        if (game.getSecondPlayer() == null) {
+            throw new RuntimeException("Second player is null");
+        }
+        if (!username.equals(game.getFirstPlayer().getUsername())) {
+            throw new RuntimeException("Only first player can start a game");
+        }
+        if(game.getGameStatus()!= GameStatus.WAITING_FOR_PLAYER) {
+            throw new RuntimeException("Invalid game status");
+        }
+
+        game.setGameStatus(GameStatus.IN_PROGRESS);
+
+        ticTacToeLogic.startNewGame(game);
+
+        return ticTacToeGameMapper.toDto(game);
     }
 }
