@@ -3,6 +3,7 @@ package pl.edu.wat.wcy.pz.project.server.controller;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,8 @@ public class TicTacToeController {
 
     private TicTacToeService ticTacToeService;
 
+    private SimpMessagingTemplate template;
+
     @PostMapping("/tictactoe")
     public ResponseEntity<?> createGame(@RequestBody TicTacToeDTO ticTacToeDTO) {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -34,6 +37,7 @@ public class TicTacToeController {
         } catch (RuntimeException e) {
             return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
         }
+        template.convertAndSend("/tictactoe/add", createdGameDto);
         return new ResponseEntity<>(createdGameDto, HttpStatus.OK);
     }
 
@@ -56,6 +60,8 @@ public class TicTacToeController {
         String username = principal.getUsername();
 
         TicTacToeGameDTO gameDto = ticTacToeService.addSecondPlayerToGame(gameId, username);
+
+        template.convertAndSend("/tictactoe/add", gameDto);
         return new ResponseEntity<>(gameDto, HttpStatus.OK);
     }
 
