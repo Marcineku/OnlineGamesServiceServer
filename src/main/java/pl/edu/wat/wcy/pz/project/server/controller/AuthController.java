@@ -36,7 +36,7 @@ import java.util.Set;
 @RequestMapping("/auth")
 public class AuthController {
 
-    public static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(AuthController.class);
 
     private AuthenticationManager authenticationManager;
 
@@ -65,10 +65,8 @@ public class AuthController {
         String jwt = jwtProvider.generateJwtToken(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        //todo Test
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        System.out.println("tutaj --->>> " + principal.getUsername() + " | " + principal.getPassword() + " | " + principal.getAuthorities().toString());
-        //todo
+        LOGGER.info("Logged user: " + principal.getUsername() + ". Authorities: " + principal.getAuthorities().toString());
 
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities()));
     }

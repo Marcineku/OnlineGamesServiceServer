@@ -18,7 +18,7 @@ import org.springframework.stereotype.Component;
 public class WebSocketAuthChannelInterceptor implements ChannelInterceptor {
 
     private static final String TOKEN_HEADER = "Authorization";
-    public static final Logger LOGGER = LoggerFactory.getLogger(WebSocketAuthChannelInterceptor.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(WebSocketAuthChannelInterceptor.class);
 
     private WebSocketAuthenticationService webSocketAuthenticationService;
     private SimpUserRegistry userRegistry;
