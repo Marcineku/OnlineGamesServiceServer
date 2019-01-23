@@ -28,7 +28,7 @@ public class WebSocketController {
     }
 
     @MessageMapping("/send/move/{gameId}")
-    public void sendMove(@DestinationVariable Integer gameId, String message, Principal principal) throws InterruptedException {
+    public void sendMove(@DestinationVariable Long gameId, String message, Principal principal) throws InterruptedException {
         Integer fieldNumber = Integer.parseInt(message);
         TicTacToeGameStateDTO updatedGameState = ticTacToeLogic.updateGame(gameId, principal.getName(), fieldNumber);
 

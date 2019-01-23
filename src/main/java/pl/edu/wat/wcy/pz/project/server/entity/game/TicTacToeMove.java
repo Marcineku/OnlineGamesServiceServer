@@ -1,7 +1,9 @@
 package pl.edu.wat.wcy.pz.project.server.entity.game;
 
-import lombok.*;
-import org.springframework.stereotype.Component;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
 
 import javax.persistence.*;
@@ -22,10 +24,8 @@ public class TicTacToeMove {
     private Long moveNo;
     @Column(name = "CREATED")
     private Date created;
-    @Column(name = "ROW")
-    private int row;
-    @Column(name = "COLUMN")
-    private int column;
+    @Column(name = "FIELD")
+    private int field;
 
     @ManyToOne
     @JoinColumn(name = "GAME_ID", nullable = false)
