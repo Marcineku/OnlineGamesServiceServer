@@ -41,7 +41,7 @@ public class TicTacToeGameStateDTO {
     public int howManyEmptyFields() {
         int howMany = 0;
         for (int i = 0; i < gameFields.length; i++) {
-            if(gameFields[i] == 0)
+            if (gameFields[i] == 0)
                 howMany++;
         }
         return howMany;

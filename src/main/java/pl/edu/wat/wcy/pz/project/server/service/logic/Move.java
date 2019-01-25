@@ -15,5 +15,4 @@ public class Move {
     private Date created;
     private int field;
     private String username;
-
 }

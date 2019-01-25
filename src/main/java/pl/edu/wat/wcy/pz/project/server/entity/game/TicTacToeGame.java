@@ -30,6 +30,7 @@ public class TicTacToeGame {
 
     @Enumerated(EnumType.STRING)
     private PieceCode firstPlayerPieceCode;
+
     @Enumerated(EnumType.STRING)
     private GameType gameType;
 

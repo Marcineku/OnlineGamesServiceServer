@@ -29,7 +29,7 @@ public class UserController {
     public User getUserById(@PathVariable(name = "id") Long id) {
         Optional<User> userById = userService.getUserById(id);
 
-        if(!userById.isPresent())
+        if (!userById.isPresent())
             throw new RuntimeException("User not found");
 
         return userById.orElse(null);

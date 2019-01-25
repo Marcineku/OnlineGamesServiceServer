@@ -20,10 +20,13 @@ public class TicTacToeMove {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "MOVE_ID")
     private Long moveId;
+
     @Column(name = "MOVE_NO")
     private Long moveNo;
+
     @Column(name = "CREATED")
     private Date created;
+
     @Column(name = "FIELD")
     private int field;
 

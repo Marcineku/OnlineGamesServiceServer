@@ -13,8 +13,11 @@ import java.util.List;
 @Repository
 public interface TicTacToeGameRepository extends JpaRepository<TicTacToeGame, Long> {
     List<TicTacToeGame> findAllByGameTypeAndFirstPlayerNot(GameType gameType, User firstPlayer);
+
     List<TicTacToeGame> findAllByFirstPlayer_Username(String firstPlayer_username);
+
     List<TicTacToeGame> findAllByFirstPlayer_UsernameAndGameTypeAndGameStatusIn(String firstPlayer_username, GameType gameType, Collection<GameStatus> gameStatus);
+
     List<TicTacToeGame> findAllBySecondPlayer_Username(String secondPlayer_username);
 
     List<TicTacToeGame> findAllBySecondPlayer_UsernameAndGameStatus(String secondPlayer_username, GameStatus gameStatus);

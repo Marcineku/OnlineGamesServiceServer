@@ -1,6 +1,5 @@
 package pl.edu.wat.wcy.pz.project.server.service.logic;
 
-import lombok.AllArgsConstructor;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
@@ -11,10 +10,10 @@ import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeMoveRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
 
+import java.beans.ConstructorProperties;
 import java.util.*;
 import java.util.stream.Collectors;
 
-@AllArgsConstructor
 @Service
 public class TicTacToeLogic {
 
@@ -24,9 +23,19 @@ public class TicTacToeLogic {
 
     private final SimpMessagingTemplate template;
 
-    private Map<Long, TicTacToeGameStateDTO> gameStateDTOMap = new HashMap<>();
+    private Map<Long, TicTacToeGameStateDTO> gameStateDTOMap;
+    private List<Move> moves;
 
-    private List<Move> moves = new ArrayList<>();
+    @ConstructorProperties({"moveRepository", "gameRepository", "userRepository", "template"})
+    public TicTacToeLogic(TicTacToeMoveRepository moveRepository, TicTacToeGameRepository gameRepository, UserRepository userRepository, SimpMessagingTemplate template) {
+        this.moveRepository = moveRepository;
+        this.gameRepository = gameRepository;
+        this.userRepository = userRepository;
+        this.template = template;
+        this.gameStateDTOMap = new HashMap<>();
+        this.moves = new ArrayList<>();
+    }
+
 
     public boolean startNewGame(TicTacToeGame game) {
 

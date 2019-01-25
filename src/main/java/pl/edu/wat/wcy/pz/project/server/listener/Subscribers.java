@@ -43,5 +43,7 @@ public class Subscribers {
         return unsubscribed;
     }
 
-
+    public void removeSubscriptions(String user) {
+        subscriptionMap.remove(user);
+    }
 }

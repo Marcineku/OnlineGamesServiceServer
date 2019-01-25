@@ -1,9 +1,10 @@
 package pl.edu.wat.wcy.pz.project.server.listener;
 
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
@@ -28,14 +29,23 @@ public class DisconnectEvent implements ApplicationListener<SessionDisconnectEve
 
     private Subscribers subscribers;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(DisconnectEvent.class);
+
     @Override
     public void onApplicationEvent(SessionDisconnectEvent event) {
-        SimpUser user = userRegistry.getUser(event.getUser().getName());
+        if (event.getUser() == null) {
+            LOGGER.warn("Unauthenticated user - disconnect event.");
+            return;
+        }
         String username = event.getUser().getName();
+        subscribers.removeSubscriptions(username);
+        LOGGER.info("User: " + username + " disconnected.");
 
-        System.out.println("Disconnect " + username);
+        updateGameState(username);
+    }
+
+    private void updateGameState(String username) {
         List<TicTacToeGame> games = ticTacToeGameRepository.findAllBySecondPlayer_UsernameAndGameStatus(username, GameStatus.WAITING_FOR_PLAYER);
-
         games.forEach(ticTacToeGame -> ticTacToeGame.setSecondPlayer(null));
         ticTacToeGameRepository.saveAll(games);
 

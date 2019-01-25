@@ -6,7 +6,6 @@ import pl.edu.wat.wcy.pz.project.server.entity.News;
 import pl.edu.wat.wcy.pz.project.server.form.NewsDTO;
 import pl.edu.wat.wcy.pz.project.server.mapper.NewsMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.NewsRepository;
-import sun.util.resources.cldr.ar.CalendarData_ar_LB;
 
 import java.util.Calendar;
 import java.util.List;
@@ -17,7 +16,7 @@ public class NewsService {
 
     private NewsMapper newsMapper;
 
-    NewsRepository newsRepository;
+    private NewsRepository newsRepository;
 
     public List<News> getAllNews() {
         return newsRepository.findAll();
@@ -28,7 +27,6 @@ public class NewsService {
     }
 
     public News createNews(NewsDTO newsDTO) {
-
         News news = newsMapper.toEntity(newsDTO);
         news.setPublicationDate(Calendar.getInstance().getTime());
         return newsRepository.save(news);

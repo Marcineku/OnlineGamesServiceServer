@@ -32,13 +32,9 @@ public class UserService {
     }
 
     public User updateUser(Long id, User user) {
-
         Optional<User> oldUser = userRepository.findById(id);
-        if(!oldUser.isPresent())
+        if (!oldUser.isPresent())
             throw new RuntimeException("User with id " + id + "not exist");
-
-
-
         return null;
     }
 }

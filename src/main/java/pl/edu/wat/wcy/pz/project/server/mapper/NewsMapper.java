@@ -7,5 +7,6 @@ import pl.edu.wat.wcy.pz.project.server.form.NewsDTO;
 @Mapper(componentModel = "spring")
 public interface NewsMapper {
     NewsDTO toDto(News news);
+
     News toEntity(NewsDTO newsDTO);
 }

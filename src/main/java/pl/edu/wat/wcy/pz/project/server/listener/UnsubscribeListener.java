@@ -1,6 +1,8 @@
 package pl.edu.wat.wcy.pz.project.server.listener;
 
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpSession;
@@ -32,11 +34,23 @@ public class UnsubscribeListener implements ApplicationListener<SessionUnsubscri
 
     private Subscribers subscribers;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(UnsubscribeListener.class);
+
     @Override
     public void onApplicationEvent(SessionUnsubscribeEvent event) {
 
-        SimpUser user = userRegistry.getUser(event.getUser().getName());
+        if (event.getUser() == null) {
+            LOGGER.error("Unauthenticated user - unsubscribe event.");
+            return;
+        }
+
         String username = event.getUser().getName();
+        SimpUser user = userRegistry.getUser(username);
+
+        if (user == null) {
+            LOGGER.error("User with this name not exist in userRegistry.");
+            return;
+        }
         Set<SimpSession> sessions = user.getSessions();
         Set<SimpSubscription> subscriptions = new HashSet<>();
         sessions.forEach(simpSession -> subscriptions.addAll(simpSession.getSubscriptions()));
@@ -49,28 +63,46 @@ public class UnsubscribeListener implements ApplicationListener<SessionUnsubscri
 
         String unsubscribed = subscribers.updateAndReturnDifference(username, subscriptions.stream().map(SimpSubscription::getDestination).collect(Collectors.toSet()));
 
-        System.out.println(unsubscribed + " <-- unsubscribed STUFF");
+        LOGGER.info("Unsubscribe Event: " + username + ". Unsubscribe: ");
+        LOGGER.info(unsubscribed);
 
+        processUnsubscribedPath(unsubscribed, username);
+    }
+
+    private void processUnsubscribedPath(String unsubscribed, String username) {
         if (unsubscribed.contains("/chat/")) {
+            Long gameId = getGameIdFromPath(unsubscribed);
 
-            String[] split = unsubscribed.split("/");
-            if (!isNumeric(split[2]))
-                throw new RuntimeException("Invalid destination");
-            Long gameId = (long) Integer.parseInt(split[2]);
             Optional<TicTacToeGame> gameOptional = ticTacToeGameRepository.findById(gameId);
-            if (!gameOptional.isPresent())
+            if (!gameOptional.isPresent()) {
+                LOGGER.error("Game with this id not exist");
                 throw new RuntimeException("Game with this id not exist");
+            }
             TicTacToeGame game = gameOptional.get();
 
-            if (game.getSecondPlayer() == null){
-                return;
-            }
-            if (username.equals(game.getSecondPlayer().getUsername())) {
-                game.setSecondPlayer(null);
-                ticTacToeGameRepository.save(game);
-                template.convertAndSend("/tictactoe/update", ticTacToeGameMapper.toDto(game));
-            }
+            checkIfSecondPlayerLeft(game, username);
         }
+
+    }
+
+    private void checkIfSecondPlayerLeft(TicTacToeGame game, String username) {
+        if (game.getSecondPlayer() == null) {
+            return;
+        }
+        if (username.equals(game.getSecondPlayer().getUsername())) {
+            game.setSecondPlayer(null);
+            ticTacToeGameRepository.save(game);
+            template.convertAndSend("/tictactoe/update", ticTacToeGameMapper.toDto(game));
+        }
+    }
+
+    private Long getGameIdFromPath(String unsubscribed) {
+        String[] split = unsubscribed.split("/");
+        if (!isNumeric(split[2])) {
+            LOGGER.error("Invalid destination");
+            throw new RuntimeException("Invalid destination");
+        }
+        return (long) Integer.parseInt(split[2]);
     }
 
     private boolean isNumeric(String str) {

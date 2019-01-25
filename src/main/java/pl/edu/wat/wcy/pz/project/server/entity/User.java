@@ -19,17 +19,23 @@ public class User {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
     private Long userId;
+
     @NaturalId
     @Column(name = "USERNAME")
     private String username;
+
     @Column(name = "PASSWORD")
     private String password;
+
     @Column(name = "EMAIL")
     private String email;
+
     @Column(name = "REGISTRATION_DATE")
     private Date registrationDate;
+
     @Column(name = "LAST_LOGON_DATE")
     private Date lastLogonDate;
+
     @Column(name = "IS_EMAIL_VERIFIED")
     private String isEmailVerified;
 
