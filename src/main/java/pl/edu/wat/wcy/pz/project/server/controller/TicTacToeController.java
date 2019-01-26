@@ -82,14 +82,26 @@ public class TicTacToeController {
         return new ResponseEntity<>(gameDTO, HttpStatus.OK);
     }
 
-    @DeleteMapping("/tictattoe/kick/{gameId}")
-    public ResponseEntity<?> kickPlayer(@PathVariable Long gameId, @RequestBody String playerName) {
-        return null;
-    }
-
     @GetMapping("/tictactoe/state/{gameId}")
     public TicTacToeGameStateDTO getGameState(@PathVariable Long gameId) {
         return ticTacToeService.getGameState(gameId);
+    }
+
+    @DeleteMapping("/tictactoe/abandon")
+    public ResponseEntity<?> abandonGame() {
+        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        String username = principal.getUsername();
+
+        Long gameId = ticTacToeService.abandonGame(username);
+
+        template.convertAndSend("/tictactoe/delete", gameId);
+        return new ResponseEntity<>(HttpStatus.OK);
+    }
+
+    //todo
+    @DeleteMapping("/tictattoe/kick/{gameId}")
+    public ResponseEntity<?> kickPlayer(@PathVariable Long gameId, @RequestBody String playerName) {
+        return null;
     }
 
     /**

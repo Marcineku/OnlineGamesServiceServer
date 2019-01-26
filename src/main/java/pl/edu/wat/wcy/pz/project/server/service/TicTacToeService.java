@@ -74,7 +74,7 @@ public class TicTacToeService {
         }
         TicTacToeGame game = gameOptional.get();
 
-        if(game.getGameStatus() != GameStatus.WAITING_FOR_PLAYER && game.getGameStatus() != GameStatus.IN_PROGRESS) {
+        if (game.getGameStatus() != GameStatus.WAITING_FOR_PLAYER && game.getGameStatus() != GameStatus.IN_PROGRESS) {
             LOGGER.error("Bad game status: " + username);
             throw new RuntimeException("Bad game status");
         }
@@ -167,16 +167,28 @@ public class TicTacToeService {
 
     public TicTacToeGameDTO getGame(Long gameId) {
         Optional<TicTacToeGame> gameById = ticTacToeGameRepository.findById(gameId);
-        if(!gameById.isPresent())
+        if (!gameById.isPresent())
             throw new GameNotFoundException("Game not found");
-            //throw new RuntimeException("Game not found");
+        //throw new RuntimeException("Game not found");
         return ticTacToeGameMapper.toDto(gameById.get());
     }
 
     public TicTacToeGameStateDTO getGameState(Long gameId) {
         Optional<TicTacToeGameStateDTO> gameState = ticTacToeLogic.getGameState(gameId);
-        if(!gameState.isPresent())
+        if (!gameState.isPresent())
             throw new GameNotFoundException("Game not found");
         return gameState.get();
+    }
+
+    public Long abandonGame(String username) {
+        Optional<TicTacToeGame> userGame = ticTacToeGameRepository.findFirstByFirstPlayer_UsernameAndGameStatus(username, GameStatus.WAITING_FOR_PLAYER);
+        if (!userGame.isPresent()) {
+            LOGGER.info("User " + username + " has no games to abandon.");
+            throw new RuntimeException("User has no games to abandon.");
+        }
+        TicTacToeGame game = userGame.get();
+        Long gameId = game.getGameId();
+        ticTacToeGameRepository.delete(game);
+        return gameId;
     }
 }

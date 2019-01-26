@@ -9,6 +9,7 @@ import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface TicTacToeGameRepository extends JpaRepository<TicTacToeGame, Long> {
@@ -23,6 +24,8 @@ public interface TicTacToeGameRepository extends JpaRepository<TicTacToeGame, Lo
     List<TicTacToeGame> findAllBySecondPlayer_UsernameAndGameStatus(String secondPlayer_username, GameStatus gameStatus);
 
     List<TicTacToeGame> findAllByFirstPlayer_UsernameAndGameStatusIn(String firstPlayer_username, Collection<GameStatus> gameStatus);
+
+    Optional<TicTacToeGame> findFirstByFirstPlayer_UsernameAndGameStatus(String firstPlayer_username, GameStatus gameStatus);
 
     boolean existsByFirstPlayer_UsernameAndGameStatusIn(String firstPlayer_username, Collection<GameStatus> gameStatus);
 }
