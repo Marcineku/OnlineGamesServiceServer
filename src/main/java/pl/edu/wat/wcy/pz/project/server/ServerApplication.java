@@ -11,10 +11,7 @@ import pl.edu.wat.wcy.pz.project.server.entity.User;
 import pl.edu.wat.wcy.pz.project.server.repository.RoleRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
 
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
 @SpringBootApplication
 public class ServerApplication {
@@ -26,44 +23,9 @@ public class ServerApplication {
     @Bean
     ApplicationRunner init(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder encoder) {
         return args -> {
-//            Role role = new Role(1L, RoleName.ROLE_ADMIN);
-//            Role role2 = new Role(2L, RoleName.ROLE_USER);
-//            roleRepository.save(role);
-//            roleRepository.save(role2);
-//
-//            Set<Role> roles = new HashSet<>();
-//            roles.add(roleRepository.findByRoleName(RoleName.ROLE_ADMIN).get());
-//            roles.add(roleRepository.findByRoleName(RoleName.ROLE_USER).get());
-//
-//            User user = User.builder()
-//                    .username("Mateusz")
-//                    .email("mateusz@mateusz.pl")
-//                    .password(encoder.encode("Mateusz"))
-//                    .registrationDate(new Date())
-//                    .isEmailVerified("T")
-//                    .lastLogonDate(new Date())
-//                    .roles(roles).build();
-//
-//            userRepository.save(user);
-//
-//            roles.removeIf(role1 -> role1.getRoleName().equals(RoleName.ROLE_ADMIN));
-//
-//            user = User.builder()
-//                    .username("Marcin")
-//                    .email("Marcin@Marcin.pl")
-//                    .password(encoder.encode("Marcin"))
-//                    .registrationDate(new Date())
-//                    .isEmailVerified("T")
-//                    .lastLogonDate(new Date())
-//                    .roles(roles).build();
-//            userRepository.save(user);
-//            Optional<User> mateusz = userRepository.findByUsername("Mateusz");
-//            mateusz.get().setPassword(encoder.encode("Mateusz"));
-//            userRepository.save(mateusz.get());
-//
-//            Optional<User> marcin = userRepository.findByUsername("Marcin");
-//            marcin.get().setPassword(encoder.encode("Marcin"));
-//            userRepository.save(marcin.get());
+            List<User> allUsers = userRepository.findAll();
+            allUsers.forEach(user -> user.setPassword(encoder.encode(user.getUsername())));
+            userRepository.saveAll(allUsers);
         };
     }
 }
