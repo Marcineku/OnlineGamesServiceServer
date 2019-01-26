@@ -80,7 +80,7 @@ public class UnsubscribeListener implements ApplicationListener<SessionUnsubscri
                 throw new RuntimeException("Game with this id not exist");
             }
             TicTacToeGame game = gameOptional.get();
-            if (game.getGameStatus() != GameStatus.IN_PROGRESS && game.getGameStatus() != GameStatus.WAITING_FOR_PLAYER)
+            if (game.getGameStatus() != GameStatus.WAITING_FOR_PLAYER)
                 return;
             checkIfSecondPlayerLeft(game, username);
         }

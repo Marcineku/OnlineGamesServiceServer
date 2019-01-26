@@ -99,7 +99,7 @@ public class TicTacToeController {
     }
 
     //todo
-    @DeleteMapping("/tictattoe/kick/{gameId}")
+    @DeleteMapping("/tictactoe/kick/{gameId}")
     public ResponseEntity<?> kickPlayer(@PathVariable Long gameId, @RequestBody String playerName) {
         return null;
     }
