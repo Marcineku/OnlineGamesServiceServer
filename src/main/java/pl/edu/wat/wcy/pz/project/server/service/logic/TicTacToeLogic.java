@@ -91,6 +91,8 @@ public class TicTacToeLogic {
             gameStateDTOMap.remove(gameId);
 
             template.convertAndSend("/tictactoe/delete", gameId);
+        } else {
+            ticTacToeGameStateDTO.setUserTurn(playerNumber == 1 ? ticTacToeGameStateDTO.getSecondUser() : ticTacToeGameStateDTO.getFirstUser());
         }
 
         return ticTacToeGameStateDTO;
