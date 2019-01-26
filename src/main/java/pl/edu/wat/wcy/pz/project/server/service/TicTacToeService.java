@@ -74,6 +74,11 @@ public class TicTacToeService {
         }
         TicTacToeGame game = gameOptional.get();
 
+        if(game.getGameStatus() != GameStatus.WAITING_FOR_PLAYER) {
+            LOGGER.error("Bad game status: " + username);
+            throw new RuntimeException("Bad game status");
+        }
+
         if (game.getSecondPlayer() != null) {
             LOGGER.error("User: " + username + "was trying to join full game.");
             throw new RuntimeException("Somebody has already joined this game.");
