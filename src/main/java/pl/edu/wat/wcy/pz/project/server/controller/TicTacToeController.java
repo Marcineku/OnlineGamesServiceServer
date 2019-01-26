@@ -41,6 +41,11 @@ public class TicTacToeController {
         return new ResponseEntity<>(createdGameDto, HttpStatus.OK);
     }
 
+    @GetMapping("/tictactoe/{gameId}")
+    public TicTacToeGameDTO getGame(@PathVariable Long gameId) {
+        return ticTacToeService.getGame(gameId);
+    }
+
     @GetMapping("/tictactoe/games/active")
     public List<TicTacToeGame> getActiveGame() {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();

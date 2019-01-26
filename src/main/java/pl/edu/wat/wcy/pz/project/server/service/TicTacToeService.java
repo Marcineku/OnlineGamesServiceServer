@@ -153,7 +153,12 @@ public class TicTacToeService {
         }
 
         game.setGameStatus(GameStatus.IN_PROGRESS);
+        ticTacToeGameRepository.save(game);
         ticTacToeLogic.startNewGame(game);
         return ticTacToeGameMapper.toDto(game);
+    }
+
+    public TicTacToeGameDTO getGame(Long gameId) {
+        return ticTacToeGameMapper.toDto(ticTacToeGameRepository.getOne(gameId));
     }
 }
