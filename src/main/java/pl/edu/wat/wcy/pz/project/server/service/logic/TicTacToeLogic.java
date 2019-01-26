@@ -129,4 +129,8 @@ public class TicTacToeLogic {
             return true;
         return false;
     }
+
+    public Optional<TicTacToeGameStateDTO> getGameState(Long gameId) {
+        return Optional.ofNullable(gameStateDTOMap.get(gameId));
+    }
 }

@@ -12,6 +12,7 @@ import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeMove;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
+import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
 import pl.edu.wat.wcy.pz.project.server.service.TicTacToeService;
 
 import java.util.List;
@@ -84,6 +85,11 @@ public class TicTacToeController {
     @DeleteMapping("/tictattoe/kick/{gameId}")
     public ResponseEntity<?> kickPlayer(@PathVariable Long gameId, @RequestBody String playerName) {
         return null;
+    }
+
+    @GetMapping("/tictactoe/state/{gameId}")
+    public TicTacToeGameStateDTO getGameState(@PathVariable Long gameId) {
+        return ticTacToeService.getGameState(gameId);
     }
 
     /**

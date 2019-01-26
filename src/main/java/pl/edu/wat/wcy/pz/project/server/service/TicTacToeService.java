@@ -9,8 +9,10 @@ import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
 import pl.edu.wat.wcy.pz.project.server.entity.game.GameType;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeMove;
+import pl.edu.wat.wcy.pz.project.server.exception.GameNotFoundException;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
+import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
 import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeGameMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeMoveRepository;
@@ -159,6 +161,17 @@ public class TicTacToeService {
     }
 
     public TicTacToeGameDTO getGame(Long gameId) {
-        return ticTacToeGameMapper.toDto(ticTacToeGameRepository.getOne(gameId));
+        Optional<TicTacToeGame> gameById = ticTacToeGameRepository.findById(gameId);
+        if(!gameById.isPresent())
+            throw new GameNotFoundException("Game not found");
+            //throw new RuntimeException("Game not found");
+        return ticTacToeGameMapper.toDto(gameById.get());
+    }
+
+    public TicTacToeGameStateDTO getGameState(Long gameId) {
+        Optional<TicTacToeGameStateDTO> gameState = ticTacToeLogic.getGameState(gameId);
+        if(!gameState.isPresent())
+            throw new GameNotFoundException("Game not found");
+        return gameState.get();
     }
 }
