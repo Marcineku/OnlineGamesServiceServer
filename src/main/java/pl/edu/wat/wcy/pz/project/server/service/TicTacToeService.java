@@ -74,7 +74,7 @@ public class TicTacToeService {
         }
         TicTacToeGame game = gameOptional.get();
 
-        if(game.getGameStatus() != GameStatus.WAITING_FOR_PLAYER || game.getGameStatus() != GameStatus.IN_PROGRESS) {
+        if(game.getGameStatus() != GameStatus.WAITING_FOR_PLAYER && game.getGameStatus() != GameStatus.IN_PROGRESS) {
             LOGGER.error("Bad game status: " + username);
             throw new RuntimeException("Bad game status");
         }
