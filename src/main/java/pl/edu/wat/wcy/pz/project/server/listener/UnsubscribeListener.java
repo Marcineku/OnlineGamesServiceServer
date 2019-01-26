@@ -11,6 +11,7 @@ import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
+import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
 import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeGameMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
@@ -79,10 +80,10 @@ public class UnsubscribeListener implements ApplicationListener<SessionUnsubscri
                 throw new RuntimeException("Game with this id not exist");
             }
             TicTacToeGame game = gameOptional.get();
-
+            if (game.getGameStatus() != GameStatus.IN_PROGRESS && game.getGameStatus() != GameStatus.WAITING_FOR_PLAYER)
+                return;
             checkIfSecondPlayerLeft(game, username);
         }
-
     }
 
     private void checkIfSecondPlayerLeft(TicTacToeGame game, String username) {
@@ -90,6 +91,7 @@ public class UnsubscribeListener implements ApplicationListener<SessionUnsubscri
             return;
         }
         if (username.equals(game.getSecondPlayer().getUsername())) {
+            LOGGER.info("Setting secondPlayer = null to game: " + game.getGameId());
             game.setSecondPlayer(null);
             ticTacToeGameRepository.save(game);
             template.convertAndSend("/tictactoe/update", ticTacToeGameMapper.toDto(game));

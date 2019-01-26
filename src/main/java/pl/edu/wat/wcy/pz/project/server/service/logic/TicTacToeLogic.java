@@ -102,6 +102,7 @@ public class TicTacToeLogic {
         Integer[] gameFields = ticTacToeGameStateDTO.getGameFields();
         boolean endGame = checkIfPlayerWon(gameFields, playerNumber);
         if (endGame) {
+            System.out.println("Change game state. Id: " + ticTacToeGameStateDTO.getGameId() + ". Winner: " + (playerNumber == 1 ? ticTacToeGameStateDTO.getFirstUser() : ticTacToeGameStateDTO.getSecondUser()));
             ticTacToeGameStateDTO.setGameStatus(playerNumber == 1 ? GameStatus.FIRST_PLAYER_WON : GameStatus.SECOND_PLAYER_WON);
             return true;
         }
