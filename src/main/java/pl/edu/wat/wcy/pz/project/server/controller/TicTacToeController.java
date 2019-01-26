@@ -7,12 +7,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameType;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
-import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeMove;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
+import pl.edu.wat.wcy.pz.project.server.form.TicTacToeMoveDto;
 import pl.edu.wat.wcy.pz.project.server.service.TicTacToeService;
 
 import java.util.List;
@@ -109,20 +108,15 @@ public class TicTacToeController {
      *
      * @return
      */
-    @GetMapping("/tictactoe/myGames")
-    public List<TicTacToeGame> getUserGames() {
+
+    @GetMapping("/tictactoe/history")
+    public List<TicTacToeGameDTO> getGamesHistory() {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ticTacToeService.getUserGames(principal.getUsername());
+        return ticTacToeService.getUserGamesHistory(principal.getUsername());
     }
 
-    @GetMapping("/tictactoe/gamesHistory/{gameType}")
-    public List<TicTacToeGame> getGamesHistory(@PathVariable GameType gameType) {
-        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        return ticTacToeService.getUserGamesHistory(principal.getUsername(), gameType);
-    }
-
-    @GetMapping("/moves/{gameId}")
-    public List<TicTacToeMove> getGameMoves(@PathVariable Long gameId) {
+    @GetMapping("/tictactoe/history/moves/{gameId}")
+    public List<TicTacToeMoveDto> getGameMoves(@PathVariable Long gameId) {
         return ticTacToeService.getGameMoves(gameId);
     }
 }

@@ -8,12 +8,13 @@ import pl.edu.wat.wcy.pz.project.server.entity.User;
 import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
 import pl.edu.wat.wcy.pz.project.server.entity.game.GameType;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
-import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeMove;
 import pl.edu.wat.wcy.pz.project.server.exception.GameNotFoundException;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
+import pl.edu.wat.wcy.pz.project.server.form.TicTacToeMoveDto;
 import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeGameMapper;
+import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeMoveMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeMoveRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
 public class TicTacToeService {
 
     private TicTacToeGameMapper ticTacToeGameMapper;
+    private TicTacToeMoveMapper ticTacToeMoveMapper;
 
     private TicTacToeLogic ticTacToeLogic;
 
@@ -110,29 +112,14 @@ public class TicTacToeService {
         return games.stream().map(ticTacToeGameMapper::toDto).collect(Collectors.toList());
     }
 
-    public List<TicTacToeGame> getUserGames(String username) {
-        return ticTacToeGameRepository.findAllByFirstPlayer_Username(username);
+    public List<TicTacToeGameDTO> getUserGamesHistory(String username) {
+        List<TicTacToeGame> userGamesList = ticTacToeGameRepository.findAllByFirstPlayer_UsernameOrSecondPlayer_Username(username, username);
+        userGamesList.removeIf(ticTacToeGame -> ticTacToeGame.getGameStatus() == GameStatus.WAITING_FOR_PLAYER || ticTacToeGame.getGameStatus() == GameStatus.IN_PROGRESS);
+        return userGamesList.stream().map(ticTacToeGame -> ticTacToeGameMapper.toDto(ticTacToeGame)).collect(Collectors.toList());
     }
 
-    public List<TicTacToeGame> getUserGamesHistory(String username, GameType gameType) {
-        if (gameType.equals(GameType.SINGLEPLAYER))
-            return ticTacToeGameRepository.findAllByFirstPlayer_UsernameAndGameTypeAndGameStatusIn(username, GameType.SINGLEPLAYER, Arrays.asList(GameStatus.FIRST_PLAYER_WON, GameStatus.SECOND_PLAYER_WON, GameStatus.DRAW));
-        else {
-            List<TicTacToeGame> games = ticTacToeGameRepository.findAllByFirstPlayer_Username(username);
-            games.addAll(ticTacToeGameRepository.findAllBySecondPlayer_Username(username));
-
-            games = games.stream().filter(ticTacToeGame -> ticTacToeGame.getGameType().equals(GameType.MULTIPLAYER))
-                    .filter(ticTacToeGame ->
-                            ticTacToeGame.getGameStatus().equals(GameStatus.FIRST_PLAYER_WON) ||
-                                    ticTacToeGame.getGameStatus().equals(GameStatus.SECOND_PLAYER_WON) ||
-                                    ticTacToeGame.getGameStatus().equals(GameStatus.DRAW)
-                    ).collect(Collectors.toList());
-            return games;
-        }
-    }
-
-    public List<TicTacToeMove> getGameMoves(Long gameId) {
-        return ticTacToeMoveRepository.findAllByGame_GameId(gameId);
+    public List<TicTacToeMoveDto> getGameMoves(Long gameId) {
+        return ticTacToeMoveRepository.findAllByGame_GameId(gameId).stream().map(ticTacToeMove -> ticTacToeMoveMapper.toDto(ticTacToeMove)).collect(Collectors.toList());
     }
 
     public List<TicTacToeGame> getActiveGames(String username) {

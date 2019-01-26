@@ -15,17 +15,13 @@ import java.util.Optional;
 public interface TicTacToeGameRepository extends JpaRepository<TicTacToeGame, Long> {
     List<TicTacToeGame> findAllByGameTypeAndFirstPlayerNot(GameType gameType, User firstPlayer);
 
-    List<TicTacToeGame> findAllByFirstPlayer_Username(String firstPlayer_username);
-
-    List<TicTacToeGame> findAllByFirstPlayer_UsernameAndGameTypeAndGameStatusIn(String firstPlayer_username, GameType gameType, Collection<GameStatus> gameStatus);
-
-    List<TicTacToeGame> findAllBySecondPlayer_Username(String secondPlayer_username);
-
     List<TicTacToeGame> findAllBySecondPlayer_UsernameAndGameStatus(String secondPlayer_username, GameStatus gameStatus);
 
     List<TicTacToeGame> findAllByFirstPlayer_UsernameAndGameStatusIn(String firstPlayer_username, Collection<GameStatus> gameStatus);
 
     Optional<TicTacToeGame> findFirstByFirstPlayer_UsernameAndGameStatus(String firstPlayer_username, GameStatus gameStatus);
+
+    List<TicTacToeGame> findAllByFirstPlayer_UsernameOrSecondPlayer_Username(String firstPlayer_username, String secondPlayer_username);
 
     boolean existsByFirstPlayer_UsernameAndGameStatusIn(String firstPlayer_username, Collection<GameStatus> gameStatus);
 }
