@@ -12,7 +12,7 @@ import pl.edu.wat.wcy.pz.project.server.exception.GameNotFoundException;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeMoveDto;
+import pl.edu.wat.wcy.pz.project.server.form.TicTacToeMoveDTO;
 import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeGameMapper;
 import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeMoveMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
@@ -77,10 +77,14 @@ public class TicTacToeService {
         TicTacToeGame game = gameOptional.get();
 
         if (game.getGameStatus() != GameStatus.WAITING_FOR_PLAYER && game.getGameStatus() != GameStatus.IN_PROGRESS) {
-            LOGGER.error("Bad game status: " + username);
+            LOGGER.error("Bad game status. Username: " + username + ". Game: " + gameId);
             throw new RuntimeException("Bad game status");
         }
 
+        if (game.getGameType() == GameType.SINGLEPLAYER) {
+            LOGGER.error("Bad game type. User: " + username + ". Game: " + gameId);
+            throw new RuntimeException("Bad game type");
+        }
         if (game.getSecondPlayer() != null) {
             LOGGER.error("User: " + username + "was trying to join full game.");
             throw new RuntimeException("Somebody has already joined this game.");
@@ -118,7 +122,7 @@ public class TicTacToeService {
         return userGamesList.stream().map(ticTacToeGame -> ticTacToeGameMapper.toDto(ticTacToeGame)).collect(Collectors.toList());
     }
 
-    public List<TicTacToeMoveDto> getGameMoves(Long gameId) {
+    public List<TicTacToeMoveDTO> getGameMoves(Long gameId) {
         return ticTacToeMoveRepository.findAllByGame_GameId(gameId).stream().map(ticTacToeMove -> ticTacToeMoveMapper.toDto(ticTacToeMove)).collect(Collectors.toList());
     }
 
@@ -133,7 +137,7 @@ public class TicTacToeService {
             throw new RuntimeException("Game with id " + gameId + "not exist");
         }
         TicTacToeGame game = gameOptional.get();
-        if (game.getSecondPlayer() == null) {
+        if (game.getSecondPlayer() == null && game.getGameType() == GameType.MULTIPLAYER) {
             LOGGER.error("Second player is null. Cannot start game: " + gameId);
             throw new RuntimeException("Second player is null");
         }

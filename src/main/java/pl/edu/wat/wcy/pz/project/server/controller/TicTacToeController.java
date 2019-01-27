@@ -11,7 +11,7 @@ import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeMoveDto;
+import pl.edu.wat.wcy.pz.project.server.form.TicTacToeMoveDTO;
 import pl.edu.wat.wcy.pz.project.server.service.TicTacToeService;
 
 import java.util.List;
@@ -116,7 +116,7 @@ public class TicTacToeController {
     }
 
     @GetMapping("/tictactoe/history/moves/{gameId}")
-    public List<TicTacToeMoveDto> getGameMoves(@PathVariable Long gameId) {
+    public List<TicTacToeMoveDTO> getGameMoves(@PathVariable Long gameId) {
         return ticTacToeService.getGameMoves(gameId);
     }
 }

@@ -3,6 +3,7 @@ package pl.edu.wat.wcy.pz.project.server.service.logic;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
+import pl.edu.wat.wcy.pz.project.server.entity.game.GameType;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeMove;
 import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
@@ -42,42 +43,54 @@ public class TicTacToeLogic {
         if (gameStateDTOMap.containsKey(game.getGameId()))
             return false;
 
-        gameStateDTOMap.put(game.getGameId(), new TicTacToeGameStateDTO(game.getGameId(), game.getFirstPlayer().getUsername(), game.getFirstPlayer().getUsername(), game.getSecondPlayer().getUsername()));
+        TicTacToeGameStateDTO newGameState = new TicTacToeGameStateDTO(game.getGameId(), game.getFirstPlayer().getUsername(), game.getSecondPlayer() == null ? null : game.getSecondPlayer().getUsername(), game.getGameType());
+        gameStateDTOMap.put(game.getGameId(), newGameState);
         return true;
     }
 
     public TicTacToeGameStateDTO updateGame(Long gameId, String username, Integer fieldNumber) {
-
         if (!gameStateDTOMap.containsKey(gameId)) {
             throw new RuntimeException("Game not exist");
         }
         TicTacToeGameStateDTO ticTacToeGameStateDTO = gameStateDTOMap.get(gameId);
-        if (!username.equals(ticTacToeGameStateDTO.getUserTurn())) {
-            throw new RuntimeException("Wrong user");
+
+        int playerNumber;
+        if (ticTacToeGameStateDTO.getGameType() == GameType.MULTIPLAYER) {
+            if (!username.equals(ticTacToeGameStateDTO.getUserTurn())) {
+                throw new RuntimeException("Wrong user");
+            }
+            playerNumber = ticTacToeGameStateDTO.getUserTurn().equals(ticTacToeGameStateDTO.getFirstUser()) ? 1 : 2;
+        } else {
+            if (username == null) {
+                if (ticTacToeGameStateDTO.getUserTurn() != null) {
+                    throw new RuntimeException("Wrong user");
+                }
+                playerNumber = 2;
+            } else {
+                if (!username.equals(ticTacToeGameStateDTO.getUserTurn())) {
+                    throw new RuntimeException("Wrong user");
+                }
+                playerNumber = 1;
+            }
         }
         Integer[] gameFields = ticTacToeGameStateDTO.getGameFields();
         if (gameFields[fieldNumber] != 0) {
             throw new RuntimeException("This field is already taken");
         }
 
-        //make move
-        //check if somebody won
-        //update gameStatus or update user
-        int playerNumber = ticTacToeGameStateDTO.getUserTurn().equals(ticTacToeGameStateDTO.getFirstUser()) ? 1 : 2;
-
         gameFields[fieldNumber] = playerNumber;
 
-        Move move = new Move(gameId, 9 - ticTacToeGameStateDTO.howManyEmptyFields(), Calendar.getInstance().getTime(), fieldNumber, ticTacToeGameStateDTO.getUserTurn());
+        Move move = new Move(ticTacToeGameStateDTO.getGameId(), 9 - ticTacToeGameStateDTO.howManyEmptyFields(), Calendar.getInstance().getTime(), fieldNumber, ticTacToeGameStateDTO.getUserTurn());
         moves.add(move);
 
         boolean statusChanged = updateGameStatus(ticTacToeGameStateDTO, playerNumber);
 
         if (statusChanged) {
-            Optional<TicTacToeGame> gameOptional = gameRepository.findById(gameId);
+            Optional<TicTacToeGame> gameOptional = gameRepository.findById(ticTacToeGameStateDTO.getGameId());
             TicTacToeGame game = gameOptional.get();
             game.setGameStatus(ticTacToeGameStateDTO.getGameStatus());
             gameRepository.save(game);
-            List<Move> movesToAdd = moves.stream().filter(m -> m.getGameId().equals(gameId)).collect(Collectors.toList());
+            List<Move> movesToAdd = moves.stream().filter(m -> m.getGameId().equals(ticTacToeGameStateDTO.getGameId())).collect(Collectors.toList());
             moves.removeAll(movesToAdd);
             for (Move m : movesToAdd) {
                 TicTacToeMove ticTacToeMove = new TicTacToeMove();
@@ -88,13 +101,11 @@ public class TicTacToeLogic {
                 ticTacToeMove.setUser(userRepository.findByUsername(m.getUsername()).orElse(null));
                 moveRepository.save(ticTacToeMove);
             }
-            gameStateDTOMap.remove(gameId);
-
-            template.convertAndSend("/tictactoe/delete", gameId);
+            gameStateDTOMap.remove(ticTacToeGameStateDTO.getGameId());
+            template.convertAndSend("/tictactoe/delete", ticTacToeGameStateDTO.getGameId());
         } else {
             ticTacToeGameStateDTO.setUserTurn(playerNumber == 1 ? ticTacToeGameStateDTO.getSecondUser() : ticTacToeGameStateDTO.getFirstUser());
         }
-
         return ticTacToeGameStateDTO;
     }
 
@@ -135,5 +146,17 @@ public class TicTacToeLogic {
 
     public Optional<TicTacToeGameStateDTO> getGameState(Long gameId) {
         return Optional.ofNullable(gameStateDTOMap.get(gameId));
+    }
+
+    public int getNextMove(Integer[] gameFields) {
+        List<Integer> possibleMoves = new ArrayList<>();
+        for (int i = 0; i < gameFields.length; i++) {
+            if (gameFields[i] == 0)
+                possibleMoves.add(i);
+        }
+
+        Random random = new Random();
+        int i = random.nextInt(possibleMoves.size());
+        return possibleMoves.get(i);
     }
 }

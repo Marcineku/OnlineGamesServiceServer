@@ -11,7 +11,7 @@ import java.util.Date;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-public class TicTacToeMoveDto {
+public class TicTacToeMoveDTO {
     private Long moveNo;
     private Date created;
     private int field;

@@ -33,8 +33,15 @@ public class WebSocketController {
         TicTacToeGameStateDTO updatedGameState = ticTacToeLogic.updateGame(gameId, principal.getName(), fieldNumber);
 
         System.out.println(principal.getName() + "<----");
-        this.template.convertAndSend("/move/" + gameId,
-                updatedGameState);
+        this.template.convertAndSend("/move/" + gameId, updatedGameState);
+
+        if (updatedGameState.getUserTurn() != null)
+            return;
+        Thread.sleep(2000);
+        int aiMove = ticTacToeLogic.getNextMove(updatedGameState.getGameFields());
+
+        TicTacToeGameStateDTO gameStateAfterAIMove = ticTacToeLogic.updateGame(gameId, null, aiMove);
+        this.template.convertAndSend("/move/" + gameId, gameStateAfterAIMove);
     }
 
 //    @MessageMapping("")

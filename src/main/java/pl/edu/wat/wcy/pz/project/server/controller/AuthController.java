@@ -28,6 +28,7 @@ import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
 import javax.validation.Valid;
 import java.util.Calendar;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
 @AllArgsConstructor
@@ -65,8 +66,12 @@ public class AuthController {
         String jwt = jwtProvider.generateJwtToken(authentication);
         UserDetails userDetails = (UserDetails) authentication.getPrincipal();
 
-        UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
-        LOGGER.info("Logged user: " + principal.getUsername() + ". Authorities: " + principal.getAuthorities().toString());
+        Optional<User> userOptional = userRepository.findByUsername(userDetails.getUsername());
+        User user = userOptional.get();
+        user.setLastLogonDate(Calendar.getInstance().getTime());
+        userRepository.save(user);
+
+        LOGGER.info("Logged user: " + userDetails.getUsername() + ". Authorities: " + userDetails.getAuthorities().toString());
 
         return ResponseEntity.ok(new JwtResponse(jwt, userDetails.getUsername(), userDetails.getAuthorities()));
     }
