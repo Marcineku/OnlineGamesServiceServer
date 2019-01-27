@@ -107,6 +107,7 @@ public class TicTacToeService {
 
         User user = userOptional.get();
         List<TicTacToeGame> games = ticTacToeGameRepository.findAllByGameTypeAndFirstPlayerNot(GameType.MULTIPLAYER, user);
+        games.addAll(ticTacToeGameRepository.findAllByGameTypeAndFirstPlayerNot(GameType.SINGLEPLAYER, user));
         List<GameStatus> statusList = new ArrayList<>();
 
         statusList.add(GameStatus.WAITING_FOR_PLAYER);
