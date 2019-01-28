@@ -14,6 +14,7 @@ import java.util.Date;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "TIC_TAC_TOE_MOVE")
 public class TicTacToeMove {
 
     @Id

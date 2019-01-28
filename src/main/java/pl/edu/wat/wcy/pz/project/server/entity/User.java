@@ -14,6 +14,7 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Builder
+@Table(name = "USER")
 public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -21,7 +22,7 @@ public class User {
     private Long userId;
 
     @NaturalId
-    @Column(name = "USERNAME")
+    @Column(name = "USERNAME", length = 20)
     private String username;
 
     @Column(name = "PASSWORD")

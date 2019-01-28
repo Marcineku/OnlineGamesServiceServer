@@ -12,9 +12,11 @@ import java.util.Date;
 @NoArgsConstructor
 @Builder
 @Entity
+@Table(name = "TIC_TAC_TOE_GAME")
 public class TicTacToeGame {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "GAME_ID")
     private Long gameId;
 
     @Column(name = "CREATED")
@@ -29,11 +31,14 @@ public class TicTacToeGame {
     private User secondPlayer;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "FIRST_PLAYER_PIECE_CODE")
     private PieceCode firstPlayerPieceCode;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "GAME_TYPE")
     private GameType gameType;
 
     @Enumerated(EnumType.STRING)
+    @Column(name = "GAME_STATUS")
     private GameStatus gameStatus;
 }

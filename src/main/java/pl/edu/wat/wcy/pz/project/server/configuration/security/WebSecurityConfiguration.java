@@ -59,8 +59,11 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/news/**").permitAll()
                 .antMatchers("/auth/**").permitAll()
-                .antMatchers("/h2-console/**").permitAll()  //for h2-console
                 .antMatchers("/socket/**").permitAll() //for websocket handshake
+                .antMatchers("/h2-console/**").permitAll()  //for h2-console
+                .antMatchers("/swagger-resources/**").permitAll() //swagger
+                .antMatchers("/v2/api-docs/**").permitAll()
+                .antMatchers("/swagger-ui.html").permitAll()
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
