@@ -30,7 +30,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private JwtAuthEntryPoint unauthorizedHandler;
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -61,9 +60,7 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
                 .antMatchers("/auth/**").permitAll()
                 .antMatchers("/socket/**").permitAll() //for websocket handshake
                 .antMatchers("/h2-console/**").permitAll()  //for h2-console
-                .antMatchers("/swagger-resources/**").permitAll() //swagger
-                .antMatchers("/v2/api-docs/**").permitAll()
-                .antMatchers("/swagger-ui.html").permitAll()
+                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagge‌​r-ui.html", "/swagger-resources/configuration/security").permitAll() //swagger
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
