@@ -11,8 +11,8 @@ import org.springframework.messaging.simp.user.SimpUser;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionUnsubscribeEvent;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameStatus;
 import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeGameMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
 
@@ -56,17 +56,15 @@ public class UnsubscribeListener implements ApplicationListener<SessionUnsubscri
         Set<SimpSubscription> subscriptions = new HashSet<>();
         sessions.forEach(simpSession -> subscriptions.addAll(simpSession.getSubscriptions()));
 
-        System.out.println("Unubscribe:");
+        LOGGER.trace("Unsubscription event: " + username);
+        LOGGER.trace("Subscriptions before:");
         subscriptions.forEach(simpSubscription -> {
-            System.out.println("id " + simpSubscription.getId());
-            System.out.println("destination " + simpSubscription.getDestination());
+            LOGGER.trace("id " + simpSubscription.getId());
+            LOGGER.trace("destination " + simpSubscription.getDestination());
         });
 
         String unsubscribed = subscribers.updateAndReturnDifference(username, subscriptions.stream().map(SimpSubscription::getDestination).collect(Collectors.toSet()));
-
-        LOGGER.info("Unsubscribe Event: " + username + ". Unsubscribe: ");
-        LOGGER.info(unsubscribed);
-
+        LOGGER.info("Unsubscribe Event: " + username + ". Unsubscribe: " + unsubscribed);
         processUnsubscribedPath(unsubscribed, username);
     }
 
@@ -91,7 +89,7 @@ public class UnsubscribeListener implements ApplicationListener<SessionUnsubscri
             return;
         }
         if (username.equals(game.getSecondPlayer().getUsername())) {
-            LOGGER.info("Setting secondPlayer = null to game: " + game.getGameId());
+            LOGGER.info("Setting secondPlayer to null to game: " + game.getGameId());
             game.setSecondPlayer(null);
             ticTacToeGameRepository.save(game);
             template.convertAndSend("/tictactoe/update", ticTacToeGameMapper.toDto(game));

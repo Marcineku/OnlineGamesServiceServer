@@ -1,4 +1,4 @@
-package pl.edu.wat.wcy.pz.project.server.form;
+package pl.edu.wat.wcy.pz.project.server.dto;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

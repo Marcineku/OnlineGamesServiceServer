@@ -1,12 +1,12 @@
-package pl.edu.wat.wcy.pz.project.server.form;
+package pl.edu.wat.wcy.pz.project.server.dto;
 
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameType;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameStatus;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameType;
 
 @Getter
 @Setter
@@ -18,6 +18,7 @@ public class TicTacToeGameStateDTO {
     private String userTurn;
     private String firstUser;
     private String secondUser;
+
     @JsonIgnore
     private GameType gameType;
 

@@ -17,7 +17,6 @@ public class CustomizedResponseEntityExceptionHandler extends ResponseEntityExce
     @ExceptionHandler(GameNotFoundException.class)
     public final ResponseEntity<Object> handleGameNotFoundException(Exception ex, WebRequest request) {
         ExceptionResponse exceptionResponse = new ExceptionResponse(Calendar.getInstance().getTime(), ex.getMessage(), request.getDescription(false));
-
         return new ResponseEntity<>(exceptionResponse, HttpStatus.NOT_FOUND);
     }
 }

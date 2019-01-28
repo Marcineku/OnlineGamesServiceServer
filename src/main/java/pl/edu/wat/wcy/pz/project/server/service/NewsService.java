@@ -2,8 +2,8 @@ package pl.edu.wat.wcy.pz.project.server.service;
 
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
+import pl.edu.wat.wcy.pz.project.server.dto.NewsDTO;
 import pl.edu.wat.wcy.pz.project.server.entity.News;
-import pl.edu.wat.wcy.pz.project.server.form.NewsDTO;
 import pl.edu.wat.wcy.pz.project.server.mapper.NewsMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.NewsRepository;
 

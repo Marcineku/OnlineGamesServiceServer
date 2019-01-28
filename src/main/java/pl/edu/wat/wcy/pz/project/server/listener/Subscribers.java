@@ -35,7 +35,6 @@ public class Subscribers {
         Set<String> oldSubs = subscriptionMap.get(user);
         oldSubs.removeAll(subscriptions);
         if (oldSubs.size() == 1) {
-            System.out.println("Test");
             unsubscribed = oldSubs.iterator().next();
         }
         oldSubs.clear();

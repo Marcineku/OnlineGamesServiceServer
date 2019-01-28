@@ -1,4 +1,4 @@
-package pl.edu.wat.wcy.pz.project.server.entity.game;
+package pl.edu.wat.wcy.pz.project.server.entity.game.enumeration;
 
 public enum GameStatus {
     WAITING_FOR_PLAYER,

@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import pl.edu.wat.wcy.pz.project.server.entity.enumeration.RoleName;
 
 import javax.persistence.*;
 

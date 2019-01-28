@@ -2,6 +2,9 @@ package pl.edu.wat.wcy.pz.project.server.entity.game;
 
 import lombok.*;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameStatus;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameType;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.PieceCode;
 
 import javax.persistence.*;
 import java.util.Date;

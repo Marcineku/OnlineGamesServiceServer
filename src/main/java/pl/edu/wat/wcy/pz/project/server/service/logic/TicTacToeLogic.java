@@ -1,12 +1,14 @@
 package pl.edu.wat.wcy.pz.project.server.service.logic;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameType;
+import pl.edu.wat.wcy.pz.project.server.dto.TicTacToeGameStateDTO;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeMove;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameStatus;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameType;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeMoveRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 
 @Service
 public class TicTacToeLogic {
+
+    private static final Logger LOGGER = LoggerFactory.getLogger(TicTacToeLogic.class);
 
     private TicTacToeMoveRepository moveRepository;
     private TicTacToeGameRepository gameRepository;
@@ -39,9 +43,10 @@ public class TicTacToeLogic {
 
 
     public boolean startNewGame(TicTacToeGame game) {
-
         if (gameStateDTOMap.containsKey(game.getGameId()))
             return false;
+
+        LOGGER.info("Starting new game. Id: " + game.getGameId() + ". Type:" + game.getGameType());
 
         TicTacToeGameStateDTO newGameState = new TicTacToeGameStateDTO(game.getGameId(), game.getFirstPlayer().getUsername(), game.getSecondPlayer() == null ? null : game.getSecondPlayer().getUsername(), game.getGameType());
         gameStateDTOMap.put(game.getGameId(), newGameState);
@@ -50,24 +55,27 @@ public class TicTacToeLogic {
 
     public TicTacToeGameStateDTO updateGame(Long gameId, String username, Integer fieldNumber) {
         if (!gameStateDTOMap.containsKey(gameId)) {
+            LOGGER.warn("Game not exist: " + gameId + ". Cannot move!");
             throw new RuntimeException("Game not exist");
         }
         TicTacToeGameStateDTO ticTacToeGameStateDTO = gameStateDTOMap.get(gameId);
-
         int playerNumber;
         if (ticTacToeGameStateDTO.getGameType() == GameType.MULTIPLAYER) {
             if (!username.equals(ticTacToeGameStateDTO.getUserTurn())) {
+                LOGGER.info("Wrong user was trying to make move. User: " + username + ". Turn: " + ticTacToeGameStateDTO.getUserTurn());
                 throw new RuntimeException("Wrong user");
             }
             playerNumber = ticTacToeGameStateDTO.getUserTurn().equals(ticTacToeGameStateDTO.getFirstUser()) ? 1 : 2;
         } else {
             if (username == null) {
                 if (ticTacToeGameStateDTO.getUserTurn() != null) {
+                    LOGGER.info("Wrong user was trying to make move. User: " + "AI" + ". Turn: " + ticTacToeGameStateDTO.getUserTurn());
                     throw new RuntimeException("Wrong user");
                 }
                 playerNumber = 2;
             } else {
                 if (!username.equals(ticTacToeGameStateDTO.getUserTurn())) {
+                    LOGGER.info("Wrong user was trying to make move. User: " + username + ". Turn: " + ticTacToeGameStateDTO.getUserTurn());
                     throw new RuntimeException("Wrong user");
                 }
                 playerNumber = 1;
@@ -75,6 +83,7 @@ public class TicTacToeLogic {
         }
         Integer[] gameFields = ticTacToeGameStateDTO.getGameFields();
         if (gameFields[fieldNumber] != 0) {
+            LOGGER.info("Field already taken. Game: " + gameId + ". Field: " + fieldNumber);
             throw new RuntimeException("This field is already taken");
         }
 
@@ -82,10 +91,12 @@ public class TicTacToeLogic {
 
         Move move = new Move(ticTacToeGameStateDTO.getGameId(), 9 - ticTacToeGameStateDTO.howManyEmptyFields(), Calendar.getInstance().getTime(), fieldNumber, ticTacToeGameStateDTO.getUserTurn());
         moves.add(move);
+        LOGGER.trace("Created move: " + fieldNumber + ". Game: " + gameId);
 
         boolean statusChanged = updateGameStatus(ticTacToeGameStateDTO, playerNumber);
 
         if (statusChanged) {
+            gameRepository.getOne(ticTacToeGameStateDTO.getGameId());
             Optional<TicTacToeGame> gameOptional = gameRepository.findById(ticTacToeGameStateDTO.getGameId());
             TicTacToeGame game = gameOptional.get();
             game.setGameStatus(ticTacToeGameStateDTO.getGameStatus());
@@ -113,7 +124,7 @@ public class TicTacToeLogic {
         Integer[] gameFields = ticTacToeGameStateDTO.getGameFields();
         boolean endGame = checkIfPlayerWon(gameFields, playerNumber);
         if (endGame) {
-            System.out.println("Change game state. Id: " + ticTacToeGameStateDTO.getGameId() + ". Winner: " + (playerNumber == 1 ? ticTacToeGameStateDTO.getFirstUser() : ticTacToeGameStateDTO.getSecondUser()));
+            LOGGER.info("Changed game state. Id: " + ticTacToeGameStateDTO.getGameId() + ". Winner: " + (playerNumber == 1 ? ticTacToeGameStateDTO.getFirstUser() : ticTacToeGameStateDTO.getSecondUser()));
             ticTacToeGameStateDTO.setGameStatus(playerNumber == 1 ? GameStatus.FIRST_PLAYER_WON : GameStatus.SECOND_PLAYER_WON);
             return true;
         }
@@ -148,15 +159,21 @@ public class TicTacToeLogic {
         return Optional.ofNullable(gameStateDTOMap.get(gameId));
     }
 
-    public int getNextMove(Integer[] gameFields) {
+    public int getNextAIMove(Integer[] gameFields) {
         List<Integer> possibleMoves = new ArrayList<>();
         for (int i = 0; i < gameFields.length; i++) {
             if (gameFields[i] == 0)
                 possibleMoves.add(i);
         }
-
         Random random = new Random();
         int i = random.nextInt(possibleMoves.size());
         return possibleMoves.get(i);
+    }
+
+    public TicTacToeGameStateDTO createAIMove(TicTacToeGameStateDTO gameState) throws InterruptedException {
+        Thread.sleep(2000);
+        int aiMove = getNextAIMove(gameState.getGameFields());
+        LOGGER.trace("Next AI move: " + aiMove + ". Game: " + gameState.getGameId());
+        return updateGame(gameState.getGameId(), null, aiMove);
     }
 }

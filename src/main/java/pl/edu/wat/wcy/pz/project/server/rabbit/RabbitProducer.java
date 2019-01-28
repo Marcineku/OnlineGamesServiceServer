@@ -9,7 +9,7 @@ import org.springframework.amqp.core.AmqpTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import pl.edu.wat.wcy.pz.project.server.form.EmailDTO;
+import pl.edu.wat.wcy.pz.project.server.dto.EmailDTO;
 
 @AllArgsConstructor
 @Component
@@ -32,7 +32,7 @@ public class RabbitProducer {
             amqpTemplate.convertAndSend(exchange, routingKey, dto);
             LOGGER.info("Message sent to queue");
         } catch (AmqpException e) {
-            LOGGER.error("Exception in RabbitProducer" + e.getMessage());
+            LOGGER.error("Exception in RabbitProducer " + e.getMessage());
         }
     }
 

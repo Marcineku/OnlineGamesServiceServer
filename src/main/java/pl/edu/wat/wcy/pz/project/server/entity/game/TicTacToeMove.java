@@ -36,6 +36,6 @@ public class TicTacToeMove {
     private TicTacToeGame game;
 
     @ManyToOne
-    @JoinColumn(name = "USER_ID", nullable = true)
+    @JoinColumn(name = "USER_ID")
     private User user;
 }

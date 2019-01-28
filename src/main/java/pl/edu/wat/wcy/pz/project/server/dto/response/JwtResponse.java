@@ -1,4 +1,4 @@
-package pl.edu.wat.wcy.pz.project.server.form.response;
+package pl.edu.wat.wcy.pz.project.server.dto.response;
 
 
 import lombok.Getter;

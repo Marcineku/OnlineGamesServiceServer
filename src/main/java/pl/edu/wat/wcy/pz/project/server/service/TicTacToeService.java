@@ -4,15 +4,15 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pl.edu.wat.wcy.pz.project.server.dto.TicTacToeDTO;
+import pl.edu.wat.wcy.pz.project.server.dto.TicTacToeGameDTO;
+import pl.edu.wat.wcy.pz.project.server.dto.TicTacToeGameStateDTO;
+import pl.edu.wat.wcy.pz.project.server.dto.TicTacToeMoveDTO;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameType;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameStatus;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameType;
 import pl.edu.wat.wcy.pz.project.server.exception.GameNotFoundException;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeMoveDTO;
 import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeGameMapper;
 import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeMoveMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
@@ -57,7 +57,9 @@ public class TicTacToeService {
                 .gameType("singleplayer".equalsIgnoreCase(ticTacToeDTO.getGameType()) ? GameType.SINGLEPLAYER : GameType.MULTIPLAYER)
                 .gameStatus(GameStatus.WAITING_FOR_PLAYER)
                 .build();
+
         ticTacToeGameRepository.save(newGame);
+        LOGGER.trace("Created game: " + newGame.getGameId());
         return ticTacToeGameMapper.toDto(newGame);
     }
 
@@ -152,15 +154,20 @@ public class TicTacToeService {
 
         game.setGameStatus(GameStatus.IN_PROGRESS);
         ticTacToeGameRepository.save(game);
-        ticTacToeLogic.startNewGame(game);
+        boolean gameStarted = ticTacToeLogic.startNewGame(game);
+        if (!gameStarted) {
+            LOGGER.error("Game not started. Error. Game id: " + game.getGameId());
+            throw new RuntimeException("Game not started");
+        }
         return ticTacToeGameMapper.toDto(game);
     }
 
     public TicTacToeGameDTO getGame(Long gameId) {
         Optional<TicTacToeGame> gameById = ticTacToeGameRepository.findById(gameId);
-        if (!gameById.isPresent())
+        if (!gameById.isPresent()) {
+            LOGGER.info("Game not found " + gameId);
             throw new GameNotFoundException("Game not found");
-        //throw new RuntimeException("Game not found");
+        }
         return ticTacToeGameMapper.toDto(gameById.get());
     }
 
@@ -174,11 +181,12 @@ public class TicTacToeService {
     public Long abandonGame(String username) {
         Optional<TicTacToeGame> userGame = ticTacToeGameRepository.findFirstByFirstPlayer_UsernameAndGameStatus(username, GameStatus.WAITING_FOR_PLAYER);
         if (!userGame.isPresent()) {
-            LOGGER.info("User " + username + " has no games to abandon.");
+            LOGGER.warn("User " + username + " has no games to abandon.");
             throw new RuntimeException("User has no games to abandon.");
         }
         TicTacToeGame game = userGame.get();
         Long gameId = game.getGameId();
+        LOGGER.info("Game to delete (abandoned) id: " + gameId);
         ticTacToeGameRepository.delete(game);
         return gameId;
     }

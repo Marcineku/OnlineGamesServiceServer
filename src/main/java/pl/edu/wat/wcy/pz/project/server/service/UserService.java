@@ -1,6 +1,8 @@
 package pl.edu.wat.wcy.pz.project.server.service;
 
 import lombok.AllArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
@@ -14,14 +16,7 @@ public class UserService {
 
     private UserRepository userRepository;
 
-    public User createUser(User user) {
-        List<User> userList = userRepository.findAll();
-
-        if (userList.stream().map(User::getUsername).anyMatch(user.getUsername()::equals))
-            throw new RuntimeException("A user with this username already exist");
-
-        return userRepository.save(user);
-    }
+    private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -32,9 +27,15 @@ public class UserService {
     }
 
     public User updateUser(Long id, User user) {
-        Optional<User> oldUser = userRepository.findById(id);
-        if (!oldUser.isPresent())
+        LOGGER.info("User to update. Id: " + id);
+        Optional<User> oldUserOptional = userRepository.findById(id);
+        if (!oldUserOptional.isPresent())
             throw new RuntimeException("User with id " + id + "not exist");
-        return null;
+        User oldUser = oldUserOptional.get();
+        oldUser.setEmail(user.getEmail());
+        oldUser.setRoles(user.getRoles());
+        userRepository.save(oldUser);
+        LOGGER.info("User updated. Id: " + oldUser.getUserId());
+        return oldUser;
     }
 }

@@ -30,15 +30,13 @@ public class SubscribeListener implements ApplicationListener<SessionSubscribeEv
 
     @Override
     public void onApplicationEvent(SessionSubscribeEvent event) {
-
         if (event.getUser() == null) {
             LOGGER.warn("Unauthenticated user - subscribe event.");
             return;
         }
-
         String username = event.getUser().getName();
 
-        LOGGER.info("Subscription event: " + username);
+        LOGGER.trace("Subscription event: " + username);
 
         SimpUser user = userRegistry.getUser(username);
         if (user == null) {
@@ -49,12 +47,11 @@ public class SubscribeListener implements ApplicationListener<SessionSubscribeEv
         Set<SimpSubscription> subscriptions = new HashSet<>();
         sessions.forEach(simpSession -> subscriptions.addAll(simpSession.getSubscriptions()));
 
-        LOGGER.info("Subscriptions: ");
+        LOGGER.trace("Subscriptions: ");
         subscriptions.forEach(simpSubscription -> {
-            LOGGER.info("Id: " + simpSubscription.getId());
-            LOGGER.info("Destination: " + simpSubscription.getDestination());
+            LOGGER.trace("Id: " + simpSubscription.getId());
+            LOGGER.trace("Destination: " + simpSubscription.getDestination());
         });
-
         subscribers.addSubscriptions(username, subscriptions.stream().map(SimpSubscription::getDestination).collect(Collectors.toSet()));
     }
 }

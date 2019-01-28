@@ -8,8 +8,8 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.messaging.SessionDisconnectEvent;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameStatus;
 import pl.edu.wat.wcy.pz.project.server.mapper.TicTacToeGameMapper;
 import pl.edu.wat.wcy.pz.project.server.repository.TicTacToeGameRepository;
 
@@ -46,6 +46,7 @@ public class DisconnectEvent implements ApplicationListener<SessionDisconnectEve
 
     private void updateGameState(String username) {
         List<TicTacToeGame> games = ticTacToeGameRepository.findAllBySecondPlayer_UsernameAndGameStatus(username, GameStatus.WAITING_FOR_PLAYER);
+        LOGGER.trace("Games to update (set second player to null): " + games.size());
         games.forEach(ticTacToeGame -> ticTacToeGame.setSecondPlayer(null));
         ticTacToeGameRepository.saveAll(games);
 

@@ -14,13 +14,13 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import pl.edu.wat.wcy.pz.project.server.configuration.security.jwt.JwtProvider;
+import pl.edu.wat.wcy.pz.project.server.dto.EmailDTO;
+import pl.edu.wat.wcy.pz.project.server.dto.LoginForm;
+import pl.edu.wat.wcy.pz.project.server.dto.SignUpForm;
+import pl.edu.wat.wcy.pz.project.server.dto.response.JwtResponse;
 import pl.edu.wat.wcy.pz.project.server.entity.Role;
-import pl.edu.wat.wcy.pz.project.server.entity.RoleName;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
-import pl.edu.wat.wcy.pz.project.server.form.EmailDTO;
-import pl.edu.wat.wcy.pz.project.server.form.LoginForm;
-import pl.edu.wat.wcy.pz.project.server.form.SignUpForm;
-import pl.edu.wat.wcy.pz.project.server.form.response.JwtResponse;
+import pl.edu.wat.wcy.pz.project.server.entity.enumeration.RoleName;
 import pl.edu.wat.wcy.pz.project.server.rabbit.RabbitProducer;
 import pl.edu.wat.wcy.pz.project.server.repository.RoleRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
@@ -55,7 +55,7 @@ public class AuthController {
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginForm) {
 
         Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginForm.getUsername(), loginForm.getPassword()));
-
+        LOGGER.trace("User: " + loginForm.getUsername() + " is trying to log in.");
         if (userRegistry.getUser(loginForm.getUsername()) != null) {
             LOGGER.warn("Logged user " + loginForm.getUsername() + " was trying to log in second time");
             throw new RuntimeException("User is already logged!");
@@ -78,10 +78,13 @@ public class AuthController {
 
     @PostMapping("/signup")
     public ResponseEntity<?> createUser(@Valid @RequestBody SignUpForm signUpForm) {
+        LOGGER.trace("New user is trying to sign up");
         if (userRepository.existsByUsername(signUpForm.getUsername())) {
+            LOGGER.trace("User with this name exist: " + signUpForm.getUsername());
             return new ResponseEntity<>("User with this name already exist", HttpStatus.BAD_REQUEST);
         }
         if (userRepository.existsByEmail(signUpForm.getEmail())) {
+            LOGGER.trace("User with this email exist: " + signUpForm.getEmail());
             return new ResponseEntity<>("User with this e-mail already exist", HttpStatus.BAD_REQUEST);
         }
 
@@ -111,6 +114,7 @@ public class AuthController {
 
         rabbitProducer.sendToQueue(emailDTO);
 
+        LOGGER.info("User created" + user.getUsername());
         return new ResponseEntity<>("User created!", HttpStatus.CREATED);
     }
 }

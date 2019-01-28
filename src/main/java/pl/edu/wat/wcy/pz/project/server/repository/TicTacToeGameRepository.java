@@ -3,9 +3,9 @@ package pl.edu.wat.wcy.pz.project.server.repository;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameStatus;
-import pl.edu.wat.wcy.pz.project.server.entity.game.GameType;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameStatus;
+import pl.edu.wat.wcy.pz.project.server.entity.game.enumeration.GameType;
 
 import java.util.Collection;
 import java.util.List;

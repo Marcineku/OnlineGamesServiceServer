@@ -7,11 +7,11 @@ import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+import pl.edu.wat.wcy.pz.project.server.dto.TicTacToeDTO;
+import pl.edu.wat.wcy.pz.project.server.dto.TicTacToeGameDTO;
+import pl.edu.wat.wcy.pz.project.server.dto.TicTacToeGameStateDTO;
+import pl.edu.wat.wcy.pz.project.server.dto.TicTacToeMoveDTO;
 import pl.edu.wat.wcy.pz.project.server.entity.game.TicTacToeGame;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeDTO;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameDTO;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeGameStateDTO;
-import pl.edu.wat.wcy.pz.project.server.form.TicTacToeMoveDTO;
 import pl.edu.wat.wcy.pz.project.server.service.TicTacToeService;
 
 import java.util.List;
@@ -31,12 +31,8 @@ public class TicTacToeController {
         UserDetails principal = (UserDetails) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         String username = principal.getUsername();
 
-        TicTacToeGameDTO createdGameDto;
-        try {
-            createdGameDto = ticTacToeService.createGame(ticTacToeDTO, username);
-        } catch (RuntimeException e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-        }
+        TicTacToeGameDTO createdGameDto = ticTacToeService.createGame(ticTacToeDTO, username);
+
         template.convertAndSend("/tictactoe/add", createdGameDto);
         return new ResponseEntity<>(createdGameDto, HttpStatus.OK);
     }
@@ -97,16 +93,8 @@ public class TicTacToeController {
         return new ResponseEntity<>(HttpStatus.OK);
     }
 
-    //todo
-    @DeleteMapping("/tictactoe/kick/{gameId}")
-    public ResponseEntity<?> kickPlayer(@PathVariable Long gameId, @RequestBody String playerName) {
-        return null;
-    }
-
-    /**
-     * //////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-     *
-     * @return
+    /*
+     ***Games history
      */
 
     @GetMapping("/tictactoe/history")
