@@ -1,18 +1,18 @@
 package pl.edu.wat.wcy.pz.project.server.dto;
 
-import lombok.AllArgsConstructor;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
+@Builder
 public class EmailDTO {
     private String emailAddress;
     private String emailSubject;
     private String emailText;
+    private String username;
+    private String url;
     private EmailType emailType;
 
     public enum EmailType {

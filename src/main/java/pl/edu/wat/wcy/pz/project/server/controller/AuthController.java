@@ -1,8 +1,8 @@
 package pl.edu.wat.wcy.pz.project.server.controller;
 
-import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.messaging.simp.user.SimpUserRegistry;
@@ -18,10 +18,12 @@ import pl.edu.wat.wcy.pz.project.server.dto.EmailDTO;
 import pl.edu.wat.wcy.pz.project.server.dto.LoginForm;
 import pl.edu.wat.wcy.pz.project.server.dto.SignUpForm;
 import pl.edu.wat.wcy.pz.project.server.dto.response.JwtResponse;
+import pl.edu.wat.wcy.pz.project.server.entity.EmailVerificationToken;
 import pl.edu.wat.wcy.pz.project.server.entity.Role;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
 import pl.edu.wat.wcy.pz.project.server.entity.enumeration.RoleName;
 import pl.edu.wat.wcy.pz.project.server.rabbit.RabbitProducer;
+import pl.edu.wat.wcy.pz.project.server.repository.EmailVerificationTokenRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.RoleRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
 
@@ -31,7 +33,6 @@ import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
-@AllArgsConstructor
 @CrossOrigin
 @RestController
 @RequestMapping("/auth")
@@ -43,6 +44,7 @@ public class AuthController {
 
     private UserRepository userRepository;
     private RoleRepository roleRepository;
+    private EmailVerificationTokenRepository emailVerificationTokenRepository;
 
     private PasswordEncoder encoder;
     private JwtProvider jwtProvider;
@@ -50,6 +52,20 @@ public class AuthController {
     private RabbitProducer rabbitProducer;
 
     private SimpUserRegistry userRegistry;
+
+    @Value("${email.verification.url}")
+    private String verificationUrl;
+
+    public AuthController(AuthenticationManager authenticationManager, UserRepository userRepository, RoleRepository roleRepository, EmailVerificationTokenRepository emailVerificationTokenRepository, PasswordEncoder encoder, JwtProvider jwtProvider, RabbitProducer rabbitProducer, SimpUserRegistry userRegistry) {
+        this.authenticationManager = authenticationManager;
+        this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
+        this.emailVerificationTokenRepository = emailVerificationTokenRepository;
+        this.encoder = encoder;
+        this.jwtProvider = jwtProvider;
+        this.rabbitProducer = rabbitProducer;
+        this.userRegistry = userRegistry;
+    }
 
     @PostMapping("/signin")
     public ResponseEntity<?> authenticateUser(@Valid @RequestBody LoginForm loginForm) {
@@ -103,6 +119,7 @@ public class AuthController {
         User user = User.builder()
                 .username(signUpForm.getUsername())
                 .email(signUpForm.getEmail())
+                .isEmailVerified("N")
                 .password(encoder.encode(signUpForm.getPassword()))
                 .roles(roles)
                 .registrationDate(Calendar.getInstance().getTime())
@@ -110,7 +127,16 @@ public class AuthController {
 
         userRepository.save(user);
 
-        EmailDTO emailDTO = new EmailDTO(signUpForm.getEmail(), null, null, EmailDTO.EmailType.VERIFICATION_EMAIL);
+        EmailVerificationToken emailVerificationToken = new EmailVerificationToken(user);
+        emailVerificationTokenRepository.save(emailVerificationToken);
+        System.out.println(emailVerificationToken.getToken());
+
+        EmailDTO emailDTO = EmailDTO.builder()
+                .emailAddress(user.getEmail())
+                .username(user.getUsername())
+                .url(verificationUrl + emailVerificationToken.getToken())
+                .emailType(EmailDTO.EmailType.VERIFICATION_EMAIL)
+                .build();
 
         rabbitProducer.sendToQueue(emailDTO);
 

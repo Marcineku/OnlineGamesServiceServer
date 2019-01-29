@@ -4,9 +4,12 @@ import lombok.AllArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import pl.edu.wat.wcy.pz.project.server.entity.EmailVerificationToken;
 import pl.edu.wat.wcy.pz.project.server.entity.User;
+import pl.edu.wat.wcy.pz.project.server.repository.EmailVerificationTokenRepository;
 import pl.edu.wat.wcy.pz.project.server.repository.UserRepository;
 
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 
@@ -15,6 +18,7 @@ import java.util.Optional;
 public class UserService {
 
     private UserRepository userRepository;
+    private EmailVerificationTokenRepository emailVerificationTokenRepository;
 
     private static final Logger LOGGER = LoggerFactory.getLogger(UserService.class);
 
@@ -37,5 +41,29 @@ public class UserService {
         userRepository.save(oldUser);
         LOGGER.info("User updated. Id: " + oldUser.getUserId());
         return oldUser;
+    }
+
+    public String validateEmail(String token) {
+        LOGGER.info("Token to verification: " + token);
+        Optional<EmailVerificationToken> tokenOptional = emailVerificationTokenRepository.findFirstByToken(token);
+        if (!tokenOptional.isPresent()) {
+            LOGGER.info("Token not found in database");
+            return "Invalid token. Please ask for another verification email";
+        }
+        EmailVerificationToken emailVerificationToken = tokenOptional.get();
+        if (Calendar.getInstance().getTime().after(emailVerificationToken.getExpiraionDate())) {
+            emailVerificationToken.setExpired("T");
+            emailVerificationTokenRepository.save(emailVerificationToken);
+            LOGGER.info("Token expired. TokenId: " + emailVerificationToken.getTokenId());
+            return "Token is expired. Please ask for another verification email";
+        }
+        emailVerificationToken.setExpired("T");
+        emailVerificationTokenRepository.save(emailVerificationToken);
+
+        User user = emailVerificationToken.getUser();
+        user.setIsEmailVerified("T");
+        userRepository.save(user);
+        LOGGER.info("User: " + user.getUsername() + ". Email verified.");
+        return user.getUsername() + ", your email is now verified. Have fun playing our games!";
     }
 }

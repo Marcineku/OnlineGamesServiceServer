@@ -12,17 +12,19 @@ import java.util.Optional;
 @AllArgsConstructor
 @RestController
 @CrossOrigin
-@PreAuthorize("hasRole('ADMIN')")
 public class UserController {
 
     private UserService userService;
 
+
     @GetMapping("/users")
+    @PreAuthorize("hasRole('ADMIN')")
     public List<User> getAllUsers() {
         return userService.getAllUsers();
     }
 
     @GetMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public User getUserById(@PathVariable(name = "id") Long id) {
         Optional<User> userById = userService.getUserById(id);
 
@@ -33,7 +35,13 @@ public class UserController {
     }
 
     @PutMapping("/users/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     public User updateUser(@PathVariable("id") Long id, @RequestBody User user) {
         return userService.updateUser(id, user);
+    }
+
+    @RequestMapping("/verification")
+    public String validateEmail(@RequestParam(name = "verification") String token) {
+        return userService.validateEmail(token);
     }
 }
