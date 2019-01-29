@@ -44,4 +44,9 @@ public class UserController {
     public String validateEmail(@RequestParam(name = "verification") String token) {
         return userService.validateEmail(token);
     }
+
+    @PutMapping("/user/reset/password/{email}")
+    public String resetPassword(@PathVariable String email) {
+        return userService.resetPassword(email);
+    }
 }

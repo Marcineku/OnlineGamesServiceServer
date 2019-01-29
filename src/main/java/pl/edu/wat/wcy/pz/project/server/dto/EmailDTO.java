@@ -17,6 +17,7 @@ public class EmailDTO {
 
     public enum EmailType {
         VERIFICATION_EMAIL,
+        PASSWORD_RESET,
         OTHER
     }
 }
