@@ -1,5 +1,7 @@
 package pl.edu.wat.wcy.pz.project.server.github;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
@@ -28,22 +30,22 @@ public class GithubController {
     @Value("${github.repo.server}")
     private String serverRepo;
 
+    private static final Logger LOGGER = LoggerFactory.getLogger(GithubController.class);
+
     @GetMapping("/github/traffic/{repoName}")
     public String getTraffic(@PathVariable String repoName) {
-        System.out.println("jestem");
+        LOGGER.info("Request to Github Controller. Repo: " + repoName);
         String name;
         if (repoName.equals("server"))
             name = serverRepo;
         else
             name = clientRepo;
         String url = createUrl(name);
-        System.out.println(url);
         RestTemplate restTemplate = new RestTemplate();
         HttpHeaders httpHeaders = new HttpHeaders();
         httpHeaders.set("Authorization", auth);
         HttpEntity<String> entity = new HttpEntity<>(httpHeaders);
         ResponseEntity<String> responseEntity = restTemplate.exchange(url, HttpMethod.GET, entity, String.class);
-        System.out.println(responseEntity.getBody());
         return responseEntity.getBody();
     }
 
