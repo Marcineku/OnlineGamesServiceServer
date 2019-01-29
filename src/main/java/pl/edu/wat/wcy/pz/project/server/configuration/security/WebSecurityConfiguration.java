@@ -30,7 +30,6 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
 
     private JwtAuthEntryPoint unauthorizedHandler;
 
-
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
@@ -57,9 +56,13 @@ public class WebSecurityConfiguration extends WebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         http.cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/news/**").permitAll()
-                .antMatchers("/auth/**").permitAll()
+                .antMatchers("/news/**").permitAll() //news
+                .antMatchers("/auth/**").permitAll() //sign up, login
+                .antMatchers("/user/reset/password/**").permitAll() //reset password
+                .antMatchers("/verification").permitAll() //email verification
+                .antMatchers("/socket/**").permitAll() //for websocket handshake
                 .antMatchers("/h2-console/**").permitAll()  //for h2-console
+                .antMatchers("/v2/api-docs", "/configuration/ui", "/swagger-resources", "/configuration/security", "/swagger-ui.html", "/webjars/**", "/swagger-resources/configuration/ui", "/swagge‌​r-ui.html", "/swagger-resources/configuration/security").permitAll() //swagger
                 .anyRequest().authenticated().and()
                 .exceptionHandling().authenticationEntryPoint(unauthorizedHandler).and()
                 .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);

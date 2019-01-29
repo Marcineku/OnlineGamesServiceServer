@@ -1,6 +1,10 @@
 package pl.edu.wat.wcy.pz.project.server.entity;
 
-import lombok.*;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+import pl.edu.wat.wcy.pz.project.server.entity.enumeration.RoleName;
 
 import javax.persistence.*;
 
@@ -9,10 +13,11 @@ import javax.persistence.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity
+@Table(name = "ROLE")
 public class Role {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "ROLE_ID")
     private Long roleId;
 

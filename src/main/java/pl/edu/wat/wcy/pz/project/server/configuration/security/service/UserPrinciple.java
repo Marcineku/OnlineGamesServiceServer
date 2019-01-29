@@ -77,7 +77,7 @@ public class UserPrinciple implements UserDetails {
             return true;
         if (o == null)
             return false;
-        if(getClass() != o.getClass())
+        if (getClass() != o.getClass())
             return false;
 
         UserPrinciple user = (UserPrinciple) o;

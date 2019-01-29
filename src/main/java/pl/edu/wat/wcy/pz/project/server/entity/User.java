@@ -1,6 +1,7 @@
 package pl.edu.wat.wcy.pz.project.server.entity;
 
 import lombok.*;
+import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
 import java.util.Date;
@@ -13,21 +14,29 @@ import java.util.Set;
 @NoArgsConstructor
 @Entity
 @Builder
+@Table(name = "USER")
 public class User {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "USER_ID")
     private Long userId;
-    @Column(name = "USERNAME")
+
+    @NaturalId
+    @Column(name = "USERNAME", length = 20)
     private String username;
+
     @Column(name = "PASSWORD")
     private String password;
+
     @Column(name = "EMAIL")
     private String email;
+
     @Column(name = "REGISTRATION_DATE")
     private Date registrationDate;
+
     @Column(name = "LAST_LOGON_DATE")
     private Date lastLogonDate;
+
     @Column(name = "IS_EMAIL_VERIFIED")
     private String isEmailVerified;
 

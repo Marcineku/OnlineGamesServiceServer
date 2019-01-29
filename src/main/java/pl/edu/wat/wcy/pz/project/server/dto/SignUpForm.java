@@ -1,4 +1,4 @@
-package pl.edu.wat.wcy.pz.project.server.form;
+package pl.edu.wat.wcy.pz.project.server.dto;
 
 import lombok.Getter;
 import lombok.Setter;
@@ -14,11 +14,13 @@ public class SignUpForm {
     @NotBlank
     @Size(min = 4, max = 20)
     private String username;
+
     @NotBlank
     @Email
     @Size(max = 30)
     private String email;
     private Set<String> role;
+
     @NotBlank
     @Size(min = 6, max = 16)
     private String password;
